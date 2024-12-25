@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .underline-bold-hover {
+      @apply relative text-white transition-all duration-500 ease-in-out cursor-pointer hover:font-semibold;
+    }
+  
+    .underline-bold-hover::before {
+      content: '';
+      @apply absolute bottom-[-0.5rem] left-1/2 h-[2px] w-0 bg-white transition-all duration-500;
+    }
+  
+    .underline-bold-hover:hover::before {
+      @apply w-full left-0;
+    }
+}
