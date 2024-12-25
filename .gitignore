@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+export VITE_API_KEY=AIzaSyABXydxPR5tydho1pomBDL8vMh1pDj5_d4
 
 # Editor directories and files
 .vscode/*
