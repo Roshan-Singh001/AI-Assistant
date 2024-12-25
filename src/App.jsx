@@ -17,7 +17,6 @@ import { FaChevronRight } from "react-icons/fa";
 import History from './components/History';
 import Chmarkdown from './components/Chmarkdown';
 import './App.css'
-import gradientblacktechnologybg from './assets/images/gradient-black-technology-bg.jpg';
 
 // Hooks
 import { useState,useEffect, useMemo,useRef} from 'react'
