@@ -188,7 +188,7 @@ const History = () => {
             {toggleSearch &&<button onClick={handleSearchCancel} className='p-2 bg-red-700 hover:bg-red-900 rounded-full' > <RxCross2 /></button>}
           </div>
         </div>
-        <div className='h-full overflow-x-clip overflow-y-scroll'>
+        <div className='h-full overflow-x-clip overflow-y-auto'>
             {toggleSearch && <><div className='text-gray-500 text-sm text-center'>Search Results</div> <div className='w-[50%] h-[1px] mx-auto mt-[0.1rem] bg-gray-500'></div></>}
             
             <div>
