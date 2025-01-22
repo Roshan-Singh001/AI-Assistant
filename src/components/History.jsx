@@ -37,6 +37,11 @@ const History = () => {
       theme: "dark",
     });
   }
+  const AxiosInstance = axios.create({
+    baseURL: 'http://localhost:3000/',
+    timeout: 1000,
+    headers: {'X-Custom-Header': 'foobar'}
+  });
 
   const handleSearch = (e)=>{
     const search_value = e.target.value.toLowerCase();
@@ -58,7 +63,7 @@ const History = () => {
     settoggleSearch(false);
     (async ()=> {
       try {
-        const {data: instances_Data } = await axios.get(`http://localhost:3000/all_instance/`);
+        const {data: instances_Data } = await AxiosInstance.get(`http://localhost:3000/all_instance/`);
         instances_Data.forEach((row) => {
           delete row.timestamp;
         });
@@ -92,7 +97,7 @@ const History = () => {
       else item.is_active = false;
     });
     try {
-      const {data: chatData } = await axios.get(`http://localhost:3000/chat/${instance_id}`);
+      const {data: chatData } = await AxiosInstance.get(`/chat/${instance_id}`);
       chatData.forEach((row) => {
         delete row.timestamp;
       });
@@ -113,7 +118,7 @@ const History = () => {
     let n_id = uuidv4();
     const New_Chat_id = n_id.replaceAll("-","_");
     try {
-      await axios.post(`http://localhost:3000/newchat/${New_Chat_id}`);
+      await AxiosInstance.post(`/newchat/${New_Chat_id}`);
     } catch (error) {
       notify("Failed to save data in the database");
     }
@@ -123,7 +128,7 @@ const History = () => {
     set_instance((prev)=> [...prev,{id: New_Chat_id, topic: "New Chat", is_active: true}]);
     set_chats([]);
     try {
-      await axios.post(`http://localhost:3000/instance/${New_Chat_id}`,{topic: "New Chat", is_active: false});
+      await AxiosInstance.post(`/instance/${New_Chat_id}`,{topic: "New Chat", is_active: false});
     } catch (error) {
       notify("Failed to save data in the database");
     }
@@ -131,7 +136,7 @@ const History = () => {
 
   const handleInstanceDelete = async(instance_id)=>{
     try {
-      await axios.post(`http://localhost:3000/instance_delete/${instance_id}`);
+      await AxiosInstance.post(`/instance_delete/${instance_id}`);
     } catch (error) {
 
       notify("Failed to save data in the database");
@@ -155,7 +160,7 @@ const History = () => {
           item.topic = newTopic;
           const chat_active_id = item.id;
           try {
-            await axios.post(`http://localhost:3000/instance_topic/${chat_active_id}`,{topic:newTopic});
+            await AxiosInstance.post(`/instance_topic/${chat_active_id}`,{topic:newTopic});
           } catch (error) {
             notify("Failed to save data in the database");
           }

@@ -53,11 +53,16 @@ function App() {
     resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
+  const AxiosInstance = axios.create({
+    baseURL: 'http://localhost:3000/',
+    timeout: 1000,
+    headers: {'X-Custom-Header': 'foobar'}
+  });
 
   useEffect(() => {
     (async ()=> {
       try {
-        const {data: instances_Data } = await axios.get(`http://localhost:3000/all_instance/`);
+        const {data: instances_Data } = await AxiosInstance.get(`/all_instance`);
         instances_Data.forEach((row) => {
           delete row.timestamp;
         });
@@ -84,7 +89,7 @@ function App() {
     let n_id = uuidv4();
     const New_Chat_id = n_id.replaceAll("-","_");
     try {
-      await axios.post(`http://localhost:3000/newchat/${New_Chat_id}`);
+      await AxiosInstance.post(`/newchat/${New_Chat_id}`);
     } catch (error) {
       notify("Failed to save data in the database");
     }
@@ -93,7 +98,7 @@ function App() {
     })
     setChatInstance((prev)=> [...prev,{id: New_Chat_id, topic: "New Chat", is_active: true}]);
     try {
-      await axios.post(`http://localhost:3000/instance/${New_Chat_id}`,{topic: "New Chat", is_active: false});
+      await AxiosInstance.post(`/instance/${New_Chat_id}`,{topic: "New Chat", is_active: false});
     } catch (error) {
       notify("Failed to chat instance in the database")
     }
@@ -135,7 +140,7 @@ function App() {
       if (item.is_active) chat_active_id = item.id;
     })
     try {
-      await axios.post(`http://localhost:3000/go/${chat_active_id}`, {id: id,message: message, is_human: true});
+      await AxiosInstance.post(`/go/${chat_active_id}`, {id: id,message: message, is_human: true});
     } catch (error) {
       notify("Failed to save data in the database");
     }
@@ -147,7 +152,7 @@ function App() {
       const run =  await model.generateContent([prompt]);
       ai_result = run.response.text();
       try {
-        await axios.post(`http://localhost:3000/go/${chat_active_id}`, {id: id,message: ai_result, is_human: false});
+        await AxiosInstance.post(`/go/${chat_active_id}`, {id: id,message: ai_result, is_human: false});
       } catch (error) {
         notify("Failed to save data in the database");
       }
@@ -163,7 +168,7 @@ function App() {
           if (item.is_active) item.topic = topic;
         });
         try {
-          await axios.post(`http://localhost:3000/instance_topic/${chat_active_id}`, {topic: topic});
+          await AxiosInstance.post(`/instance_topic/${chat_active_id}`, {topic: topic});
         } catch (error) {
           notify("Failed to save data in the database");
         }
