@@ -53,7 +53,7 @@ function App() {
   } = useSpeechRecognition();
   const AxiosInstance = axios.create({
     baseURL: 'http://localhost:3000/',
-    timeout: 1000,
+    timeout: 3000,
     headers: {'X-Custom-Header': 'foobar'}
   });
 
@@ -89,7 +89,9 @@ function App() {
     try {
       await AxiosInstance.post(`/newchat/${New_Chat_id}`);
     } catch (error) {
+      console.log("sadasd",error);
       notify("Failed to save data in the database");
+      return;
     }
     chatInstance.forEach((item)=>{
       if (item.is_active) item.is_active = false;
@@ -108,9 +110,7 @@ function App() {
   const handleInput = (e) => {
     const textarea = textareaRef.current;
     if (textarea) {
-      // Reset height to calculate new height correctly
       textarea.style.height = 'auto';
-      // Set new height but cap it at maxHeight
       const newHeight = Math.min(textarea.scrollHeight, maxHeight);
       textarea.style.height = `${newHeight}px`;
     }
@@ -199,7 +199,7 @@ function App() {
               return item.is_active &&<> 
                       {(togglehistory==false) && <button onClick={handleTogHistory} className='absolute top-2 left-2 p-2 bg-white text-black rounded-full'><FaChevronRight /></button>}
                       <div className='flex flex-col justify-end  gap-2 p-2 size-full overflow-auto rounded-lg '>
-                      <div className='flex flex-col gap-4 h-full overflow-y-scroll' style={{scrollbarWidth: 'none'}}>
+                      <div className='flex flex-col gap-4 h-full overflow-y-scroll rounded-lg p-2' style={{scrollbarWidth: 'none'}}>
                       {chatai.map((item)=>{
                         return (item.isAi == false?(<>
                           <div key={item.id} className='flex justify-end text-white'>
