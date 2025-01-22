@@ -49,8 +49,6 @@ function App() {
   }
   const {
     transcript,
-    listening,
-    resetTranscript,
     browserSupportsSpeechRecognition,
   } = useSpeechRecognition();
   const AxiosInstance = axios.create({
