@@ -27,6 +27,10 @@ Welcome to **Simpl-AI**, a modern AI-powered chatbot built with the **Google Gem
 #### Speech Recognition in Action:
 ![Speech Recognition](screenshots/9.png)
 
+#### Mobile View:
+![Mobile View](screenshots/Mobile1.png)
+![Mobile View](screenshots/Mobile2.png)
+
 ## 🔧 Tech Stack
 
 - **Frontend**:
