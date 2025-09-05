@@ -1,237 +1,209 @@
 // Libraries
-import axios  from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { v4 as uuidv4 } from "uuid";
 import "regenerator-runtime/runtime";
 import SpeechRecognition, {
   useSpeechRecognition,
 } from "react-speech-recognition";
+import { useNavigate } from "react-router-dom";
 
 // Icons
 import { FaMicrophone } from "react-icons/fa";
 import { FaMicrophoneAltSlash } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
+import {
+  ChevronRight,
+  MessageSquare,
+  FileText,
+  Mail,
+  Share2,
+  FileEdit,
+  Sparkles,
+  Zap,
+  PenTool,
+  Globe,
+} from "lucide-react";
 
 // Components and CSS
-import History from './components/History';
-import Chmarkdown from './components/Chmarkdown';
-import './App.css'
+import History from "./components/History";
+import Chmarkdown from "./components/Chmarkdown";
+import "./App.css";
 
 // Hooks
-import { useState,useEffect, useMemo,useRef} from 'react'
-import {newChatContext} from './context/contexts';
-import {toghistoryContext} from './context/toghistory';
-import {ChatHistoryContext} from './context/chathistory';
-import {AllChatsContext} from './context/chats';
+import { useState, useEffect, useMemo, useRef } from "react";
 
+
+const AxiosInstance = axios.create({
+  baseURL: "http://localhost:3000/",
+  timeout: 3000,
+  headers: { "X-Custom-Header": "foobar" },
+});
 
 function App() {
-  const genAI = new GoogleGenerativeAI(import.meta.env.VITE_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const navigate = useNavigate();
 
-  const [newChat, setnewChat] = useState(false);
-  const [message, setMessage] = useState("");
-  const [chatai, setChatai] = useState([]);
-  const [chatInstance, setChatInstance] = useState([]);
-  const textareaRef = useRef(null);
-  const maxHeight = 50;
-  const [mictoggle, setMicToggle] = useState(false);
-  const [togglehistory, setTogglehistory] = useState(false);
-  const toghistoryContextValue = useMemo(
-    () => ({ togglehistory, setTogglehistory }),
-    [togglehistory]
-  );
-  const notify = (message) => {
-    toast.error(`${message}`,{
-      theme: "dark",
-    });
-  }
-  const {
-    transcript,
-    browserSupportsSpeechRecognition,
-  } = useSpeechRecognition();
-  const AxiosInstance = axios.create({
-    baseURL: 'http://localhost:3000/',
-    timeout: 3000,
-    headers: {'X-Custom-Header': 'foobar'}
-  });
-
-  useEffect(() => {
-    (async ()=> {
-      try {
-        const {data: instances_Data } = await AxiosInstance.get(`/all_instance`);
-        instances_Data.forEach((row) => {
-          delete row.timestamp;
-        });
-        const transformedInstanceData = instances_Data.map((instance) => ({
-          id: instance.instance_id,
-          topic: instance.topic_message,
-          is_active: instance.active,
-        }));
-      setChatInstance(transformedInstanceData);
-    } catch (error) {
-      console.error('Error sending data: ', error);
-      notify("Failed to fetch the previous chats right now");
-    }})();
-  },[]);
-  
-  useEffect(() => {
-    setMessage(transcript);
-  }, [transcript]) 
-
-  
-
-  const handleNewChat = async() => {
-    setnewChat(true);
-    let n_id = uuidv4();
-    const New_Chat_id = n_id.replaceAll("-","_");
-    try {
-      await AxiosInstance.post(`/newchat/${New_Chat_id}`);
-    } catch (error) {
-      console.log("sadasd",error);
-      notify("Failed to save data in the database");
-      return;
-    }
-    chatInstance.forEach((item)=>{
-      if (item.is_active) item.is_active = false;
-    })
-    setChatInstance((prev)=> [...prev,{id: New_Chat_id, topic: "New Chat", is_active: true}]);
-    try {
-      await AxiosInstance.post(`/instance/${New_Chat_id}`,{topic: "New Chat", is_active: false});
-    } catch (error) {
-      notify("Failed to chat instance in the database")
-    }
-  }
-
-  const handleTogHistory = ()=>{
-    setTogglehistory(!togglehistory);
-  }
-  const handleInput = (e) => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto';
-      const newHeight = Math.min(textarea.scrollHeight, maxHeight);
-      textarea.style.height = `${newHeight}px`;
-    }
-    setMessage(e.target.value);
+  const handleToolClick = (tool) => {
+    navigate(`/tool/${tool}`);
   };
-  
-  const handleChange = (e)=>{
-    setMessage(e.target.value);
-  }
 
-  const handleMic = ()=>{
-    if (!browserSupportsSpeechRecognition) return notify("Your browser doesn't support speech recognition");
-    setMicToggle(!mictoggle);
-    if (!mictoggle){
-      SpeechRecognition.startListening({ continuous: true });  
-    } 
-    else SpeechRecognition.stopListening()
-  }
+  const tools = [
+    {
+      name: "Chat Assistant",
+      description: "General AI conversation",
+      icon: MessageSquare,
+      gradient: "from-blue-500 to-cyan-500",
+      action: "chat",
+    },
+    {
+      name: "Blog Writer",
+      description: "Create engaging blog posts",
+      icon: FileText,
+      gradient: "from-purple-500 to-pink-500",
+      action: 'blog',
+    },
+    {
+      name: "Email Writer",
+      description: "Craft professional emails",
+      icon: Mail,
+      gradient: "from-green-500 to-emerald-500",
+      action: () => handleToolClick("email"),
+    },
+    {
+      name: "Social Media",
+      description: "Create viral social posts",
+      icon: Share2,
+      gradient: "from-orange-500 to-red-500",
+      action: () => handleToolClick("social"),
+    },
+    {
+      name: "Document Writer",
+      description: "Generate Word documents",
+      icon: FileEdit,
+      gradient: "from-indigo-500 to-blue-500",
+      action: 'word',
+    },
+    {
+      name: "Creative Writer",
+      description: "Stories & creative content",
+      icon: PenTool,
+      gradient: "from-pink-500 to-rose-500",
+      action: () => handleToolClick("Creative Writer"),
+    },
+  ];
 
-  const handleGo = async()=>{
-    const prompt = message;
-    var id = uuidv4();
-    var chat_active_id = "";
-    chatInstance.forEach((item)=>{
-      if (item.is_active) chat_active_id = item.id;
-    })
-    try {
-      await AxiosInstance.post(`/go/${chat_active_id}`, {id: id,message: message, is_human: true});
-    } catch (error) {
-      notify("Failed to save data in the database");
-    }
-    setChatai( (prev)=> [...prev, { id: uuidv4(), message: prompt, isAi: false }]);
-
-    id = uuidv4();
-    var ai_result;
-    (async ()=>{
-      const run =  await model.generateContent([prompt]);
-      ai_result = run.response.text();
-      try {
-        await AxiosInstance.post(`/go/${chat_active_id}`, {id: id,message: ai_result, is_human: false});
-      } catch (error) {
-        notify("Failed to save data in the database");
-      }
-      setChatai((prev)=> [...prev, { id: uuidv4(), message: ai_result, isAi: true }]);
-    })();
-
-    if (chatai.length == 0) {
-      (async ()=>{
-        const prompt_find = `Topic or theme of the conversation in 3 words based on the user's query and the AI's response. User Said: ${prompt} reply- ${ai_result}`
-        const run =  await model.generateContent([prompt_find]);
-        const topic = run.response.text();
-        chatInstance.forEach((item)=>{
-          if (item.is_active) item.topic = topic;
-        });
-        try {
-          await AxiosInstance.post(`/instance_topic/${chat_active_id}`, {topic: topic});
-        } catch (error) {
-          notify("Failed to save data in the database");
-        }
-      })();
-    }
-  }
-
-  return ( 
+  return (
     <>
-      <div className='flex gap-2 bg-slate-900'>
-        <ToastContainer style={{fontFamily: `"Poppins", sans-serif`}} />
-        <AllChatsContext.Provider value={{chatai,set_chats: setChatai}}>
-        <ChatHistoryContext.Provider value={{chatInstance,set_instance: setChatInstance}}>
-        <toghistoryContext.Provider value={toghistoryContextValue}>
-        <newChatContext.Provider value={{newChat,New_Chat: setnewChat}}>
-          <History />
-        </newChatContext.Provider>
-        </toghistoryContext.Provider>
-        </ChatHistoryContext.Provider>
-        </AllChatsContext.Provider>
-        <section className={`flex flex-col relative p-2 justify-center items-center h-[100vh] w-screen rounded-lg bg-gradient-to-b from-black/90 to-blue-900 sm:bg-gradient-to-r sm:from-black/60 sm:to-blue-900/80`} >
-            {newChat==false?<> 
-              <div className='text-[2rem] text-white font-extrabold'>SIMPL-AI</div>
-              {(togglehistory==false) && <button title="Show History" onClick={handleTogHistory} className='absolute top-2 left-2 p-2 bg-white text-black rounded-full'><FaChevronRight /></button>}
-              <div className='text-[2rem] max-[425px]:text-[1.7rem] font-semibold mb-4 text-white'>WHAT CAN I HELP WITH ?</div>
-              <button onClick={handleNewChat} className='py-2 px-4 mt-1 bg-slate-900 text-[1.2rem] rounded-full text-white hover:bg-slate-500 hover:scale-[1.2] transition-all cursor-pointer'>START A CHAT</button>
-            </>:
-            chatInstance.map((item)=>{
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
 
-              return item.is_active &&<> 
-                      {(togglehistory==false) && <button onClick={handleTogHistory} className='absolute top-2 left-2 p-2 bg-white text-black rounded-full'><FaChevronRight /></button>}
-                      <div className='flex flex-col justify-end  gap-2 p-2 size-full overflow-auto rounded-lg '>
-                      <div className='flex flex-col gap-4 h-full overflow-y-scroll rounded-lg p-2' style={{scrollbarWidth: 'none'}}>
-                      {chatai.map((item)=>{
-                        return (item.isAi == false?(<>
-                          <div key={item.id} className='flex justify-end text-white'>
-                            <div className='max-w-[70%] p-2 bg-slate-700/75 shadow-[1px_0px_10px_black] rounded-lg'>
-                              <div className='font-bold text-[1.1rem]'>USER</div>
-                              <div className='mt-2'>{item.message}</div>
-                            </div>
-                          </div>
-                        </>):(<>
-                                <div key={item.id} className='flex justify-start text-white'>
-                                <div className='max-w-[70%] max-[600px]:max-w-[100%] p-2 bg-slate-900 shadow-[1px_0px_10px_black] rounded-lg break-normal whitespace-break-spaces'>
-                                  <div className='font-bold text-[1.1rem]'>SIMPL-AI</div>
-                                  <div className='mt-2'><Chmarkdown markdownStr={item.message}/></div>
-                                </div>
-                              </div>
-                              
-                            </>))
-                      })}
-                </div>
-                <div className='flex items-center gap-2'>
-                  <textarea rows={1} onChange={handleChange} onInput={handleInput} style={{ height: 'auto', maxHeight: `${maxHeight}px`, overflowY: textareaRef.current && textareaRef.current.scrollHeight > maxHeight ? 'auto' : 'hidden'}} value={message} className='py-3 px-4 w-full scroll-m-2 resize-none rounded-full outline-none bg-slate-600 placeholder:text-white/70 shadow-[0px_2px_12px_black_inset] text-white' type="text" placeholder='Message' />
-                  <div onClick={handleMic} className='flex justify-center h-fit w-[2.6rem] p-[0.6rem] cursor-pointer bg-white rounded-full shadow-[0px_-2px_7px_black_inset] hover:shadow-[0px_2px_7px_black_inset]'>
-                    {mictoggle?<FaMicrophone className='h-[1.2rem]' />:<FaMicrophoneAltSlash className='h-[1.2rem]' />}
+            <div className="">
+              {/* Animated background elements */}
+              <div className="absolute inset-0 overflow-hidden">
+                <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-r from-blue-400/10 to-purple-400/10 blur-3xl animate-pulse"></div>
+                <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-gradient-to-r from-pink-400/10 to-orange-400/10 blur-3xl animate-pulse delay-700"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-gradient-to-r from-cyan-400/5 to-blue-400/5 blur-3xl animate-pulse delay-1000"></div>
+              </div>
+
+              {/* Main content */}
+              <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-12">
+                {/* Header with logo */}
+                <div className="text-center mb-12">
+                  <div className="flex items-center justify-center mb-4">
+                    <Sparkles className="w-12 h-12 text-cyan-400 mr-4 animate-pulse" />
+                    <h1 className="text-6xl md:text-7xl lg:text-8xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                      SIMPL-AI
+                    </h1>
+                    <Zap className="w-12 h-12 text-purple-400 ml-4 animate-pulse delay-500" />
                   </div>
-                  <button disabled={message.length>3?false:true} onClick={handleGo} className='p-2 text-black bg-white shadow-[0px_-2px_7px_black_inset] hover:shadow-[0px_2px_7px_black_inset] font-bold rounded-full disabled:opacity-50'>GO</button>
+
+                  <div className="flex items-center justify-center mb-8">
+                    <div className="h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent w-32"></div>
+                    <Globe
+                      className="w-6 h-6 text-cyan-400 mx-4 animate-spin"
+                      style={{ animationDuration: "8s" }}
+                    />
+                    <div className="h-px bg-gradient-to-r from-transparent via-purple-400 to-transparent w-32"></div>
+                  </div>
+
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 max-w-4xl">
+                    WHAT CAN I HELP WITH?
+                  </h2>
+
+                  <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                    Choose from our AI-powered writing tools to create
+                    professional content in seconds
+                  </p>
+                </div>
+
+                {/* Tools grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto w-full mb-12">
+                  {tools.map((tool, index) => {
+                    const Icon = tool.icon;
+                    return (
+                      <button
+                        key={tool.name}
+                        onClick={()=>handleToolClick(tool.action)}
+                        className="group relative p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 hover:border-white/30 transition-all duration-500 hover:scale-105 hover:bg-white/10"
+                        style={{
+                          animationDelay: `${index * 100}ms`,
+                        }}
+                      >
+                        {/* Gradient background on hover */}
+                        <div
+                          className={`absolute inset-0 bg-gradient-to-br ${tool.gradient} opacity-0 group-hover:opacity-10 rounded-2xl transition-opacity duration-500`}
+                        ></div>
+
+                        {/* Icon */}
+                        <div
+                          className={`relative w-16 h-16 mx-auto mb-4 rounded-xl bg-gradient-to-br ${tool.gradient} p-3 group-hover:scale-110 transition-transform duration-300`}
+                        >
+                          <Icon className="w-full h-full text-white" />
+                        </div>
+
+                        {/* Content */}
+                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                          {tool.name}
+                        </h3>
+                        <p className="text-slate-400 text-sm leading-relaxed group-hover:text-slate-300 transition-colors">
+                          {tool.description}
+                        </p>
+
+                        {/* Hover indicator */}
+                        <div className="absolute bottom-4 right-4 w-2 h-2 bg-cyan-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Call to action */}
+                <div className="text-center">
+                  <p className="text-slate-400 mb-6 text-lg">
+                    Ready to get started? Pick a tool above or start with a
+                    general conversation.
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <button
+                      
+                      className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold text-lg rounded-xl hover:from-cyan-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-cyan-500/25"
+                    >
+                      <MessageSquare className="w-5 h-5 inline mr-2" />
+                      Start Free Chat
+                    </button>
+
+                    <div className="text-slate-500 text-sm">
+                      No signup required • Instant access
+                    </div>
+                  </div>
                 </div>
               </div>
-            </>
-            })}
-        </section>
+
+              {/* Bottom gradient line */}
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent opacity-50"></div>
+            </div>
       </div>
     </>
-  )
+  );
 }
-export default App
+export default App;

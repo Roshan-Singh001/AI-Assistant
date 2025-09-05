@@ -23,3 +23,4 @@ export VITE_API_KEY=AIzaSyABXydxPR5tydho1pomBDL8vMh1pDj5_d4
 *.njsproj
 *.sln
 *.sw?
+.env
