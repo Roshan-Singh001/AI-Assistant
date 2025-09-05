@@ -13,13 +13,23 @@ Welcome to **Simpl-AI**, a modern AI-powered chatbot built with the **Google Gem
 ## 📸 Screenshots
 
 #### Main Chat Interface:
-![Main Chat](screenshots/chat_interface.png)
+![Main Chat](screenshots/Mainph.png)
+![Main Chat](screenshots/Mainph2.png)
 
 #### History Sidebar:
-![History Sidebar](screenshots/history_sidebar.png)
+![History Sidebar](screenshots/3.png)
+![History Sidebar](screenshots/4.png)
+![History Sidebar](screenshots/5.png)
+![History Sidebar](screenshots/6.png)
+![History Sidebar](screenshots/7.png)
+![History Sidebar](screenshots/8.png)
 
 #### Speech Recognition in Action:
-![Speech Recognition](screenshots/speech_recognition.png)
+![Speech Recognition](screenshots/9.png)
+
+#### Mobile View:
+![Mobile View](screenshots/Mobile1.jpg)
+![Mobile View](screenshots/Mobile2.jpg)
 
 ## 🔧 Tech Stack
 
