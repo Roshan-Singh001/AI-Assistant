@@ -24,6 +24,7 @@ import {
   Zap,
   PenTool,
   Globe,
+  Code,
 } from "lucide-react";
 
 // Components and CSS
@@ -57,39 +58,11 @@ function App() {
       action: "chat",
     },
     {
-      name: "Blog Writer",
-      description: "Create engaging blog posts",
-      icon: FileText,
+      name: "Code Editor",
+      description: "Write and debug code worrying about input",
+      icon: Code,
       gradient: "from-purple-500 to-pink-500",
-      action: 'blog',
-    },
-    {
-      name: "Email Writer",
-      description: "Craft professional emails",
-      icon: Mail,
-      gradient: "from-green-500 to-emerald-500",
-      action: () => handleToolClick("email"),
-    },
-    {
-      name: "Social Media",
-      description: "Create viral social posts",
-      icon: Share2,
-      gradient: "from-orange-500 to-red-500",
-      action: () => handleToolClick("social"),
-    },
-    {
-      name: "Document Writer",
-      description: "Generate Word documents",
-      icon: FileEdit,
-      gradient: "from-indigo-500 to-blue-500",
-      action: 'word',
-    },
-    {
-      name: "Creative Writer",
-      description: "Stories & creative content",
-      icon: PenTool,
-      gradient: "from-pink-500 to-rose-500",
-      action: () => handleToolClick("Creative Writer"),
+      action: 'code',
     },
   ];
 

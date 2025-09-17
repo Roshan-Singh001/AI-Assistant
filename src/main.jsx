@@ -6,9 +6,9 @@ import './index.css'
 import App from './App.jsx'
 
 import SimpleChat from './pages/SimpleChat.jsx';
+import CodeEdit from './pages/CodeEdit.jsx';
 import { ChatProvider } from './context/chatUnderstand.jsx';
 import { ChatIndexProvider } from './context/chatIndex.jsx';
-import Wordfile from './pages/Wordfile.jsx';
 
 const router = createBrowserRouter([
   {
@@ -32,12 +32,10 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "/tool/word",
+    path: "/tool/code",
     element: (
       <>
-        <ChatProvider>
-          <Wordfile />
-        </ChatProvider>
+        <CodeEdit />
       </>
     ),
   }
