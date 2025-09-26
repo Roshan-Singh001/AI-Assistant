@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import axios from 'axios';
 import CodeMirror from '@uiw/react-codemirror';
 import { EditorView, keymap } from "@codemirror/view"
 import { defaultKeymap, indentWithTab } from "@codemirror/commands"
@@ -9,7 +10,14 @@ import { python } from '@codemirror/lang-python';
 import { cpp } from '@codemirror/lang-cpp';
 import { Play, Eye, Send, MessageSquare, TestTube, Terminal, Maximize2, Minimize2 } from 'lucide-react';
 
-const CodeEdit = ({ value = "", onChange, language = "javascript"}) => {
+const AxiosInstance = axios.create({
+  baseURL: 'http://localhost:3000/',
+  timeout: 15000,
+  headers: {'X-Custom-Header': 'foobar'}
+});
+
+const CodeEdit = ({ value = "", onChange}) => {
+  const [output, setOutput] = useState('// Output will be displayed here');
   const [local, setLocal] = useState(value);
   const [chatMessages, setChatMessages] = useState([
     { id: 1, type: 'ai', content: 'Hello! I\'m here to help you with your code. Feel free to ask any questions!' }
@@ -18,16 +26,14 @@ const CodeEdit = ({ value = "", onChange, language = "javascript"}) => {
   const [languageMode, setLanguageMode] = useState("javascript");
   const [activeTab, setActiveTab] = useState('chat');
   const [isRightPanelCollapsed, setIsRightPanelCollapsed] = useState(false);
-  const [testInput, setTestInput] = useState('// Test cases will appear here\nconsole.log("Testing...");');
-  const [output, setOutput] = useState('// Output will be displayed here');
 
   useEffect(() => setLocal(value ?? ""), [value]);
 
   const extensions = useMemo(() => {
-    var langExt; 
+    var langExt;
+    console.log("Language mode:", languageMode);
     if (languageMode === "python") {
         langExt = python();
-        
     }
     else if (languageMode === "java") {
         langExt = java();
@@ -90,16 +96,39 @@ const CodeEdit = ({ value = "", onChange, language = "javascript"}) => {
     }
   };
 
-  const handleRun = () => {
-    setOutput('Running code...\n' + new Date().toLocaleTimeString() + ': Code executed successfully');
-  };
+  const handleRun = async () => {
+  try {
+    const genRes = await AxiosInstance.post("/code/api/generate-code", {
+      logicCode: local, 
+      language: languageMode
+    });
+
+    const { fullCode } = genRes.data;
+
+    const languageMap = { javascript: 63, python: 71, cpp: 54, java: 62 };
+    const runRes = await AxiosInstance.post("/code/api/run-code", {
+        fullCode,
+        languageId: languageMap[languageMode],
+        input: "4\n2 7 11 15\n9"
+    });
+
+    const outputData = runRes.data;
+    setOutput(outputData.stdout || outputData.stderr || "No output");
+  } catch (err) {
+    setOutput("Error running code");
+    console.error(err);
+  }
+};
+
 
   const handleReview = () => {
     setActiveTab('chat');
+    console.log("Reviewing code:", local);
+    
     const reviewMessage = {
       id: chatMessages.length + 1,
       type: 'user',
-      content: 'Please review my code'
+      content: `Please review my code: ${local}`
     };
     setChatMessages(prev => [...prev, reviewMessage]);
     
@@ -255,31 +284,52 @@ const CodeEdit = ({ value = "", onChange, language = "javascript"}) => {
           )}
 
           {activeTab === 'input' && (
-            <div className='p-4 h-screen'>
-              <div className='h-screen bg-[#282c34] overflow-y-auto'>
-                <CodeMirror
-                  value={testInput}
-                  onChange={(val) => setTestInput(val)}
-                  extensions={extensions}
-                  basicSetup={true}
-                  theme="dark"
-                  height="100%"
-                />
-              </div>
-            </div>
+            <InputPanel extensions={extensions} />
           )}
 
           {activeTab === 'output' && (
-            <div className='p-4 h-full'>
-              <div className='h-full bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-auto'>
-                <pre className='whitespace-pre-wrap'>{output}</pre>
-              </div>
-            </div>
+            <OutputPanel output={output} />
           )}
         </div>
       </aside>
     </div>
   )
 }
+
+
+const InputPanel = (props) => {
+  const [testInput, setTestInput] = useState('// Test cases will appear here\nconsole.log("Testing...");');
+  return (
+    <>
+      <div className='p-4 h-screen'>
+              <div className='h-screen bg-[#282c34] overflow-y-auto'>
+                <CodeMirror
+                  value={testInput}
+                  onChange={(val) => setTestInput(val)}
+                  extensions={props.extensions}
+                  basicSetup={true}
+                  theme="dark"
+                  height="100%"
+                />
+              </div>
+      </div>
+    </>
+  )
+}
+
+const OutputPanel = ({output}) => {
+  return (
+    <>
+    <div className='p-4 h-full'>
+              <div className='h-full bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-auto'>
+                <pre className='whitespace-pre-wrap'>{output}</pre>
+              </div>
+            </div>
+
+    
+    </>
+  )
+}
+
 
 export default CodeEdit;

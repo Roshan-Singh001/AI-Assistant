@@ -4,15 +4,16 @@ import cors from 'cors';
 import path from "path";
 import dotenv from "dotenv";
 import { fileURLToPath } from "url";
+import editorRouter from './editor.js';
 const app = express();
 const port = 3000;
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({
   path: path.resolve(__dirname, ".env"),
 });
+
 // Middleware
 app.use(cors());
 app.use(express.json())
@@ -23,6 +24,7 @@ app.use(
     credentials: true,
   })
 );
+app.use('/code',editorRouter);
 
 const databasePass = process.env.DATABASE_PASS;
 const db_host = process.env.DB_HOST;
