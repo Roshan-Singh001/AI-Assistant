@@ -160,25 +160,6 @@ editorRouter.post("/api/generate-test-inputs", async (req, res) => {
   }
 });
 
-editorRouter.post("/api/run-multiple", async (req, res) => {
-  const { fullCode, languageId, inputs } = req.body;
-
-  const results = await Promise.all(
-    inputs.map(async (input) => {
-      const runRes = await axios.post("https://api.judge0.com/submissions?base64_encoded=false&wait=true", {
-        source_code: fullCode,
-        language_id: languageId,
-        stdin: input
-      });
-      return { input, output: runRes.data.stdout?.trim() || runRes.data.stderr?.trim() || "No output" };
-    })
-  );
-
-  res.status(200).json({ results });
-});
-
-
-
 editorRouter.post("/api/run-code", async (req, res) => {
   const { fullCode, languageId, input } = req.body;
 
