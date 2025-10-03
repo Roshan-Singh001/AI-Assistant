@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import MoonLoader from 'react-spinners/MoonLoader';
 import axios from 'axios';
 import CodeMirror from '@uiw/react-codemirror';
 import { EditorView, keymap } from "@codemirror/view"
@@ -8,16 +9,18 @@ import { javascript } from '@codemirror/lang-javascript';
 import { java } from '@codemirror/lang-java';
 import { python } from '@codemirror/lang-python';
 import { cpp } from '@codemirror/lang-cpp';
-import { Play, Eye, Send, MessageSquare, TestTube, Terminal, Maximize2, Minimize2 } from 'lucide-react';
+import { Play, Eye, Send, FileText, MessageSquare,CircleCheckBig, CircleX,   TestTube, Terminal, Maximize2, Minimize2, Clipboard, ClipboardCheck } from 'lucide-react';
 
 const AxiosInstance = axios.create({
   baseURL: 'http://localhost:3000/',
-  timeout: 15000,
+  timeout: 360000,
   headers: {'X-Custom-Header': 'foobar'}
 });
 
 const CodeEdit = ({ value = "", onChange}) => {
-  const [output, setOutput] = useState('// Output will be displayed here');
+  const [output, setOutput] = useState([]);
+  const [isRunning, setIsRunning] = useState(false);
+  const [testInput, setTestInput] = useState([]);
   const [local, setLocal] = useState(value);
   const [chatMessages, setChatMessages] = useState([
     { id: 1, type: 'ai', content: 'Hello! I\'m here to help you with your code. Feel free to ask any questions!' }
@@ -84,7 +87,6 @@ const CodeEdit = ({ value = "", onChange}) => {
       setChatMessages(prev => [...prev, newMessage]);
       setChatInput('');
       
-      
       setTimeout(() => {
         const aiResponse = {
           id: chatMessages.length + 2,
@@ -97,29 +99,26 @@ const CodeEdit = ({ value = "", onChange}) => {
   };
 
   const handleRun = async () => {
+    setIsRunning(true);
   try {
-    const genRes = await AxiosInstance.post("/code/api/generate-code", {
-      logicCode: local, 
-      language: languageMode
+    const res = await AxiosInstance.post("/code/api/run-full", {
+      logicCode: local,
+      language: languageMode,
     });
 
-    const { fullCode } = genRes.data;
-
-    const languageMap = { javascript: 63, python: 71, cpp: 54, java: 62 };
-    const runRes = await AxiosInstance.post("/code/api/run-code", {
-        fullCode,
-        languageId: languageMap[languageMode],
-        input: "4\n2 7 11 15\n9"
-    });
-
-    const outputData = runRes.data;
-    setOutput(outputData.stdout || outputData.stderr || "No output");
+    const { fullCode, testCases, results } = res.data;
+    console.log("✅ Full code generated:\n", fullCode);
+    console.log("📦 Test cases:", testCases);
+    console.log("🏁 Results:", results);
+    setTestInput(testCases);
+    setOutput(results);
+    setActiveTab('output');
   } catch (err) {
-    setOutput("Error running code");
+    setOutput("Error running full flow");
     console.error(err);
   }
+  setIsRunning(false);
 };
-
 
   const handleReview = () => {
     setActiveTab('chat');
@@ -149,7 +148,7 @@ const CodeEdit = ({ value = "", onChange}) => {
         {/* Toolbar */}
         <div className='flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700 shadow-sm'>
           <div className='flex items-center space-x-4'>
-            <h1 className='text-lg font-semibold text-white'>SIMPLE-AI Editor</h1>
+            <h1 className='text-lg font-semibold text-white'>SIMPL-AI Editor</h1>
             <div className='flex items-center space-x-2'>
               <span className='px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 rounded-full'>
                 {languageMode}
@@ -168,16 +167,19 @@ const CodeEdit = ({ value = "", onChange}) => {
           </div>
           
           <div className='flex items-center space-x-2'>
-            <button
+            <button 
+              disabled={isRunning || local.trim() === ""}
               onClick={handleRun}
-              className='flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 shadow-sm'
+              className='flex items-center space-x-2 px-4 py-2 disabled:opacity-50 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 shadow-sm'
             >
-              <Play size={16} />
+              {isRunning ? <span className='animate-spin'><MoonLoader size={16} color="#b3ffba" /></span> : <Play size={16} />}
+
               <span>Run</span>
             </button>
             <button
+              disabled={isRunning || local.trim() === ""}
               onClick={handleReview}
-              className='flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-sm'
+              className='flex items-center space-x-2 px-4 py-2 disabled:opacity-50 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-sm'
             >
               <Eye size={16} />
               <span>Review</span>
@@ -284,7 +286,7 @@ const CodeEdit = ({ value = "", onChange}) => {
           )}
 
           {activeTab === 'input' && (
-            <InputPanel extensions={extensions} />
+            <InputPanel testInput={testInput} />
           )}
 
           {activeTab === 'output' && (
@@ -296,40 +298,184 @@ const CodeEdit = ({ value = "", onChange}) => {
   )
 }
 
-
-const InputPanel = (props) => {
-  const [testInput, setTestInput] = useState('// Test cases will appear here\nconsole.log("Testing...");');
+const InputPanel = ({ testInput }) => {
   return (
-    <>
-      <div className='p-4 h-screen'>
-              <div className='h-screen bg-[#282c34] overflow-y-auto'>
-                <CodeMirror
-                  value={testInput}
-                  onChange={(val) => setTestInput(val)}
-                  extensions={props.extensions}
-                  basicSetup={true}
-                  theme="dark"
-                  height="100%"
-                />
-              </div>
+    <div className='h-full flex flex-col bg-[#1e1e1e]'>
+      {/* Header */}
+      <div className='px-4 py-3 bg-[#252526] border-b border-[#3e3e42] flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          <Clipboard className='w-4 h-4 text-blue-400' />
+          <h3 className='text-sm font-semibold text-gray-200'>Test Cases</h3>
+        </div>
+        <span className='text-xs text-gray-400 bg-[#3e3e42] px-2 py-1 rounded'>
+          {testInput.length} {testInput.length === 1 ? 'case' : 'cases'}
+        </span>
       </div>
-    </>
-  )
-}
 
-const OutputPanel = ({output}) => {
-  return (
-    <>
-    <div className='p-4 h-full'>
-              <div className='h-full bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-auto'>
-                <pre className='whitespace-pre-wrap'>{output}</pre>
+      {/* Content */}
+      <div className='flex-1 overflow-y-auto p-4 space-y-3'>
+        {testInput.length > 0 ? (
+          testInput.map((test, index) => (
+            <div 
+              key={index} 
+              className='bg-[#252526] rounded-lg border border-[#3e3e42] hover:border-blue-500/50 transition-colors duration-200'
+            >
+              {/* Test Case Header */}
+              <div className='px-4 py-2 rounded-lg bg-[#2d2d30] border-b border-[#3e3e42] flex items-center justify-between'>
+                <span className='text-xs font-semibold text-gray-300'>
+                  Test Case {index + 1}
+                </span>
+              </div>
+
+              {/* Test Case Content */}
+              <div className='p-4'>
+                {/* Input */}
+                <div>
+                  <label className='text-xs font-medium text-gray-400 mb-1 block'>Input:</label>
+                  <div className='bg-[#1e1e1e] rounded p-3 border border-[#3e3e42]'>
+                    <pre className='text-sm text-cyan-300 font-mono whitespace-pre-wrap break-words'>
+                      {JSON.stringify(test.input, null, 2)}
+                    </pre>
+                  </div>
+                </div>
+
+                {/* Expected Output */}
+                <div>
+                  <label className='text-xs font-medium text-gray-400 mb-1 block'>Expected Output:</label>
+                  <div className='bg-[#1e1e1e] rounded p-3 border border-[#3e3e42]'>
+                    <pre className='text-sm text-green-400 font-mono whitespace-pre-wrap break-words'>
+                      {JSON.stringify(test.expected_output, null, 2)}
+                    </pre>
+                  </div>
+                </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div className='flex flex-col items-center justify-center h-full text-center py-12'>
+            <FileText className='w-16 h-16 text-gray-600 mb-4' />
+            <p className='text-gray-400 text-sm font-medium mb-1'>No test cases available</p>
+            <p className='text-gray-500 text-xs max-w-xs'>
+              Run your code to generate test cases automatically
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
-    
-    </>
-  )
-}
+const OutputPanel = ({ output }) => {
+  return (
+    <div className='h-full flex flex-col bg-[#1e1e1e]'>
+      {/* Header */}
+      <div className='px-4 py-3 bg-[#252526] border-b border-[#3e3e42] flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          <ClipboardCheck className='w-4 h-4 text-green-400'/>
+          <h3 className='text-sm font-semibold text-gray-200'>Test Results</h3>
+        </div>
+        {output.length > 0 && (
+          <div className='flex items-center gap-2'>
+            <span className='text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded'>
+              {output.filter(r => r.passed).length} passed
+            </span>
+            <span className='text-xs text-red-400 bg-red-400/10 px-2 py-1 rounded'>
+              {output.filter(r => !r.passed).length} failed
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className='flex-1 overflow-y-auto p-4 space-y-3'>
+        {output.length > 0 ? (
+          output.map((res, index) => {
+            const passed = res.output === res.expected_output || res.passed;
+            return (
+              <div 
+                key={index} 
+                className={`rounded-lg border transition-colors duration-200 ${
+                  passed 
+                    ? 'bg-[#252526] border-green-500/30 hover:border-green-500/50' 
+                    : 'bg-[#252526] border-red-500/30 hover:border-red-500/50'
+                }`}
+              >
+                {/* Result Header */}
+                <div className={`px-4 py-2 border-b flex items-center justify-between ${
+                  passed 
+                    ? 'bg-green-500/5 border-green-500/30' 
+                    : 'bg-red-500/5 border-red-500/30'
+                }`}>
+                  <span className='text-xs font-semibold text-gray-300'>
+                    Test Case {index + 1}
+                  </span>
+                  <div className='flex items-center gap-2'>
+                    {passed ? (
+                      <>
+                        <CircleCheckBig className='w-4 h-4 text-green-400' />
+                        <span className='text-xs font-medium text-green-400'>Passed</span>
+                      </>
+                    ) : (
+                      <>
+                        <CircleX className='w-4 h-4 text-red-400' />
+                        <span className='text-xs font-medium text-red-400'>Failed</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Result Content */}
+                <div className='p-4 space-y-3'>
+                  {/* Input */}
+                  <div>
+                    <label className='text-xs font-medium text-gray-400 mb-1 block'>Input:</label>
+                    <div className='bg-[#1e1e1e] rounded p-3 border border-[#3e3e42]'>
+                      <pre className='text-sm text-cyan-300 font-mono whitespace-pre-wrap break-words'>
+                        {JSON.stringify(res.input, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+
+                  {/* Expected Output */}
+                  <div>
+                    <label className='text-xs font-medium text-gray-400 mb-1 block'>Expected:</label>
+                    <div className='bg-[#1e1e1e] rounded p-3 border border-[#3e3e42]'>
+                      <pre className='text-sm text-green-400 font-mono whitespace-pre-wrap break-words'>
+                        {JSON.stringify(res.expected, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+
+                  {/* Actual Output */}
+                  <div>
+                    <label className='text-xs font-medium text-gray-400 mb-1 block'>Your Output:</label>
+                    <div className={`bg-[#1e1e1e] rounded p-3 border ${
+                      passed ? 'border-green-500/30' : 'border-red-500/30'
+                    }`}>
+                      <pre className={`text-sm font-mono whitespace-pre-wrap break-words ${
+                        passed ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {JSON.stringify(res.output, null, 2)}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className='flex flex-col items-center justify-center h-full text-center py-12'>
+            <ClipboardCheck className='w-16 h-16 text-gray-600 mb-4'/>
+            <p className='text-gray-400 text-sm font-medium mb-1'>No results yet</p>
+            <p className='text-gray-500 text-xs max-w-xs'>
+              Execute your code to see test results here
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 
 export default CodeEdit;
