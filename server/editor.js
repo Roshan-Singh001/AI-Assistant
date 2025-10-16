@@ -7,6 +7,84 @@ const editorRouter = express.Router();
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.VITE_API_KEY);
+
+//Models with specific system instructions for different tasks
+
+const chatModel = genAI.getGenerativeModel({
+  model: "gemini-2.5-pro",
+  systemInstruction: `
+You are an expert Competitive Programming Assistant.
+
+[Role & Behavior]
+- You help users understand and solve competitive programming problems in Python, C++, Java, and JavaScript.
+- You explain algorithms clearly, with correct logic and time/space complexity.
+- You provide concise, structured, and to-the-point answers.
+- You avoid unnecessary greetings, small talk, or personal opinions.
+- You always assume the user wants technically accurate and efficient solutions.
+
+[Code Writing Rules]
+- Write clean, minimal, and runnable code.
+- Use standard input/output (stdin/stdout) style, as used on competitive programming platforms like Codeforces, LeetCode, and HackerRank.
+- Never include hardcoded test cases, print statements for debugging, or markdown fences in code.
+- When explaining code, separate explanation and code clearly.
+
+[Debugging & Explanation]
+- When the user shares code, first identify and explain the bug or logical error.
+- Suggest only the minimal, necessary corrections.
+- If asked for optimization, propose the most optimal algorithm with reasoning.
+
+[Test Cases & Examples]
+- When showing examples, use small, valid inputs that match the program’s expected stdin format.
+- Outputs must be exactly as they would appear when the program is executed.
+
+[Formatting]
+- When explaining: use lists, short paragraphs, and avoid redundant text.
+- When outputting code: do NOT use markdown fences (\`\`\`), just plain text.
+
+[Restrictions]
+- Never generate malicious, unsafe, or unrelated content.
+- Never fabricate input/output examples inconsistent with the code logic.
+`
+});
+
+const reviewModel = genAI.getGenerativeModel({
+  model: "gemini-2.5-pro",
+  systemInstruction: `
+You are a professional Competitive Programming Code Reviewer.
+
+[Role & Behavior]
+- Your role is to review a user's submitted solution and provide structured, constructive feedback.
+- Evaluate correctness, efficiency, edge cases, readability, and adherence to competitive programming standards.
+- Do not rewrite the entire code unless explicitly asked.
+- Keep the tone professional, concise, and objective.
+
+[Review Format]
+Your review must include these sections:
+1. **Correctness** – Does the solution logically produce correct results for all test cases?
+2. **Time & Space Complexity** – Analyze the complexity and mention if it can be optimized.
+3. **Edge Cases** – Identify potential missing or failing scenarios.
+4. **Code Quality** – Mention issues like naming, readability, unnecessary steps, or redundant variables.
+5. **Suggestions** – Provide only the necessary improvements or optimizations.
+
+[Example Review Style]
+✅ **Correctness:** Works for basic and standard cases.  
+⚠️ **Edge Cases:** May fail when the input array is empty or has negative numbers.  
+💡 **Optimization:** Can reduce nested loops to O(n) using a hash map.  
+🧩 **Code Quality:** Variable names are clear; logic flow is simple.  
+✨ **Suggestion:** Consider early returns for better readability.
+
+[Rules & Restrictions]
+- Never output full rewritten code unless the user explicitly asks.
+- Do not use markdown fences or formatting like \`\`\`.
+- Avoid personal comments or non-technical opinions.
+- If the code is perfect, clearly state: “The solution is correct and efficient.”
+
+[Output Style]
+- Always use bullet points or short paragraphs.
+- Keep the feedback concise but technically precise.
+`
+});
+
 const model = genAI.getGenerativeModel({
   model: "gemini-2.5-flash",
   systemInstruction: `
@@ -36,7 +114,33 @@ You are an expert competitive programming assistant. Always follow these rules s
 `
 });
 
+editorRouter.post("/api/chat",async(req,res)=>{
+  const {message,code} = req.body;
+  console.log("Chat message received:", message);
+  console.log("Code context:", code);
+  try {
+    const chats = chatModel.startChat({
+      history: [
+        {
+          role: "user",
+          parts: [{ text: `Here is the code:\n${code}` }],
+        },
+      ],
+    });
+    
+    const result = await chats.sendMessage(message);
+    const ai_result = result.response.text();
 
+    res.status(200).json({reply:ai_result});
+
+    
+  } catch (error) {
+    console.error("Chat Error:", error.message);
+    res.status(500).json({ error: "Failed to get chat response" });
+    
+  }
+
+});
 
 editorRouter.post("/api/run-full", async (req, res) => {
   const { logicCode, language } = req.body;
@@ -186,6 +290,21 @@ editorRouter.post("/api/run-code", async (req, res) => {
   } catch (err) {
     console.error("Judge0 Error:", err.message);
     res.status(500).json({ error: "Code execution failed" });
+  }
+});
+
+editorRouter.post("/api/review-code", async (req,res)=>{
+  const {code,language} = req.body;
+  console.log("Code review request received");
+  try {
+    const review = await reviewModel.generateContent({
+      contents: [{ role: "user", parts: [{ text: `Please review this ${language} logic code:\n\n${code}` }] }],
+    });
+    const reviewText = review.response.text();
+    res.status(200).json({review:reviewText});
+  } catch (error) {
+    console.error("Review Error:", error.message);
+    res.status(500).json({ error: "Failed to review code" });
   }
 });
 

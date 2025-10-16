@@ -6,69 +6,69 @@ import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 const Chmarkdown = ({markdownStr}) => {
   return (
-    <div className="prose prose-lg prose-slate max-w-none dark:prose-invert">
+    <div className="prose prose-slate max-w-none dark:prose-invert px-4 ">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
           // Headings with better spacing and typography
           h1: ({children}) => (
-            <h1 className="text-4xl font-bold text-white dark:text-white mb-6 mt-8 pb-3 border-b border-gray-200 dark:border-gray-700">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white dark:text-white mb-4 mt-4 pb-2 border-b border-gray-200 dark:border-gray-700">
               {children}
             </h1>
           ),
           h2: ({children}) => (
-            <h2 className="text-3xl font-semibold text-white dark:text-gray-100 mb-5 mt-7">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-white dark:text-gray-100 mb-3 mt-5 ">
               {children}
             </h2>
           ),
           h3: ({children}) => (
-            <h3 className="text-2xl font-medium text-white dark:text-gray-100 mb-4 mt-6">
+            <h3 className="text-lg sm:text-xl lg:text-2xl font-medium text-white dark:text-gray-100 mb-3 mt-4  ">
               {children}
             </h3>
           ),
           h4: ({children}) => (
-            <h4 className="text-xl font-medium text-white dark:text-gray-200 mb-3 mt-5">
+            <h4 className="text-base sm:text-lg lg:text-xl font-medium text-white dark:text-gray-200 mb-2.5 mt-3 ">
               {children}
             </h4>
           ),
           h5: ({children}) => (
-            <h5 className="text-lg font-medium text-white dark:text-gray-200 mb-3 mt-4">
+            <h5 className="text-sm sm:text-base lg:text-lg font-medium text-white dark:text-gray-200 mb-2 mt-3 ">
               {children}
             </h5>
           ),
           h6: ({children}) => (
-            <h6 className="text-base font-medium text-white dark:text-gray-300 mb-2 mt-4">
+            <h6 className="text-sm sm:text-base font-medium text-white dark:text-gray-300 mb-2 mt-3 ">
               {children}
             </h6>
           ),
           
           // Paragraphs with better spacing
           p: ({children}) => (
-            <p className="text-white dark:text-gray-300 leading-7 mb-4">
+            <p className="text-sm sm:text-base text-white dark:text-gray-300 mb-3">
               {children}
             </p>
           ),
           
           // Enhanced lists
           ul: ({children}) => (
-            <ul className="list-disc list-inside space-y-2 mb-4 text-white dark:text-gray-300">
+            <ul className="list-disc list-inside space-y-1.5 mb-3 text-sm sm:text-base text-white dark:text-gray-300">
               {children}
             </ul>
           ),
           ol: ({children}) => (
-            <ol className="list-decimal list-inside space-y-2 mb-4 text-white dark:text-gray-300">
+            <ol className="list-decimal list-inside space-y-1.5 mb-3 text-sm sm:text-base text-white dark:text-gray-300">
               {children}
             </ol>
           ),
           li: ({children}) => (
-            <li className="ml-4 leading-7">
+            <li className="ml-2 ">
               {children}
             </li>
           ),
           
           // Blockquotes with modern styling
           blockquote: ({children}) => (
-            <blockquote className="border-l-4 border-blue-500 bg-gray-50 dark:bg-gray-800 pl-6 py-4 mb-6 italic text-gray-700 dark:text-gray-300 rounded-r-lg">
+            <blockquote className="border-l-2 sm:border-l-4 border-blue-500 bg-gray-50 dark:bg-gray-800 pl-3 py-3 mb-4 italic text-sm sm:text-base text-gray-700 dark:text-gray-300 rounded-r-lg">
               {children}
             </blockquote>
           ),
@@ -77,7 +77,7 @@ const Chmarkdown = ({markdownStr}) => {
           a: ({children, href}) => (
             <a 
               href={href} 
-              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline decoration-blue-600/30 hover:decoration-blue-600 transition-colors duration-200"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline decoration-blue-600/30 hover:decoration-blue-600 transition-colors duration-200 text-sm sm:text-base break-words"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -87,8 +87,8 @@ const Chmarkdown = ({markdownStr}) => {
           
           // Enhanced tables
           table: ({children}) => (
-            <div className="overflow-x-auto mb-6">
-              <table className=" bg-white dark:bg-gray-800 rounded-xl overflow-auto">
+            <div className="overflow-x-auto mb-4 -mx-4 ">
+              <table className="min-w-full bg-white dark:bg-gray-800 sm:rounded-xl overflow-auto">
                 {children}
               </table>
             </div>
@@ -99,19 +99,19 @@ const Chmarkdown = ({markdownStr}) => {
             </thead>
           ),
           th: ({children}) => (
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
+            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-b border-gray-200 dark:border-gray-700">
               {children}
             </th>
           ),
           td: ({children}) => (
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+            <td className="px-3 py-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
               {children}
             </td>
           ),
           
           // Horizontal rules
           hr: () => (
-            <hr className="my-8 border-t border-gray-300 dark:border-gray-600" />
+            <hr className="my-6 border-t border-gray-300 dark:border-gray-600" />
           ),
           
           // Inline code with better styling
@@ -120,13 +120,13 @@ const Chmarkdown = ({markdownStr}) => {
             
             if (!inline && match) {
               return (
-                <div className="mb-6">
-                  <div className="bg-gray-900 rounded-t-lg px-4 py-2 border-b border-gray-700">
-                    <span className="text-gray-400 text-sm font-mono">
+                <div className="mb-4 -mx-4 ">
+                  <div className="bg-gray-900 sm:rounded-t-lg px-3 py-2 border-b border-gray-700">
+                    <span className="text-gray-400 text-xs sm:text-sm font-mono">
                       {match[1]}
                     </span>
                   </div>
-                  <div className="rounded-b-lg overflow-hidden">
+                  <div className="sm:rounded-b-lg overflow-hidden">
                     <SyntaxHighlighter
                       style={oneDark}
                       language={match[1]}
@@ -135,8 +135,9 @@ const Chmarkdown = ({markdownStr}) => {
                       customStyle={{
                         margin: 0,
                         borderRadius: 0,
-                        fontSize: '14px',
-                        lineHeight: '1.5'
+                        fontSize: window.innerWidth < 640 ? '12px' : '14px',
+                        lineHeight: '1.5',
+                        padding: window.innerWidth < 640 ? '12px' : '16px'
                       }}
                       {...props}
                     >
@@ -149,7 +150,7 @@ const Chmarkdown = ({markdownStr}) => {
             
             return (
               <code 
-                className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-1 rounded text-sm font-mono border border-gray-200 dark:border-gray-700" 
+                className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-1.5 py-0.5 rounded text-xs sm:text-sm font-mono border border-gray-200 dark:border-gray-700 break-words" 
                 {...props}
               >
                 {children}
@@ -159,14 +160,14 @@ const Chmarkdown = ({markdownStr}) => {
           
           // Enhanced images
           img: ({src, alt}) => (
-            <div className="mb-6">
+            <div className="mb-4 ">
               <img 
                 src={src} 
                 alt={alt}
                 className="max-w-full h-auto rounded-lg shadow-lg border border-gray-200 dark:border-gray-700"
               />
               {alt && (
-                <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-2 italic">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center mt-2 italic px-2">
                   {alt}
                 </p>
               )}
@@ -181,7 +182,7 @@ const Chmarkdown = ({markdownStr}) => {
                   type="checkbox"
                   checked={checked}
                   disabled={disabled}
-                  className="mr-2 h-4 w-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                  className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   readOnly
                 />
               );

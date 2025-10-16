@@ -3,7 +3,7 @@ import Aurora from './components/Aurora';
 
 import "regenerator-runtime/runtime";
 import { useNavigate } from "react-router-dom";
-
+import { FaGithub } from "react-icons/fa6";
 // Icons
 import {
   ChevronRight,
@@ -18,6 +18,9 @@ import {
   Globe,
   Code,
 } from "lucide-react";
+
+import Navbar from "./components/Navbar";
+
 
 import "./App.css";
 
@@ -67,6 +70,7 @@ function App() {
         </div>
 
         <div className="">
+          <Navbar />
           {/* Main content */}
           <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-12">
             {/* Header with logo */}
@@ -139,23 +143,21 @@ function App() {
             </div>
 
             {/* Call to action */}
-            <div className="text-center">
+            <div className="border-t text-center pt-4">
               <p className="text-slate-400 mb-6 text-lg">
                 Ready to get started? Pick a tool above or start with a
                 general conversation.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <button
-
-                  className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold text-lg rounded-xl hover:from-cyan-400 hover:to-blue-400 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-cyan-500/25"
-                >
-                  <MessageSquare className="w-5 h-5 inline mr-2" />
-                  Start Free Chat
-                </button>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
+                <div>
+                  <a href="https://github.com/Roshan-Singh001/AI-Assistant" className="hover:scale-105 transition-transform duration-300 ">
+                    <FaGithub className="text-white size-7"/>
+                  </a>
+                </div>
 
                 <div className="text-slate-500 text-sm">
-                  No signup required • Instant access
+                  Made by Roshan Singh
                 </div>
               </div>
             </div>
