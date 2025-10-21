@@ -27,6 +27,7 @@ const AxiosInstance = axios.create({
 const CodeEdit = ({ value = "", onChange }) => {
   const [output, setOutput] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
   const [testInput, setTestInput] = useState([]);
   const [local, setLocal] = useState(value);
   const [chatMessages, setChatMessages] = useState([
@@ -93,6 +94,7 @@ const CodeEdit = ({ value = "", onChange }) => {
       try {
         const res = await AxiosInstance.post("/code/api/chat", {
           message: chatInput,
+          chatHistory: chatMessages,
           code: local,
         });
 
@@ -143,6 +145,7 @@ const CodeEdit = ({ value = "", onChange }) => {
   };
 
   const handleReview = async() => {
+    setIsReviewing(true);
     setActiveTab('chat');
     console.log("Reviewing code:", local);
 
@@ -169,10 +172,14 @@ const CodeEdit = ({ value = "", onChange }) => {
       };
 
       setChatMessages(prev => [...prev, aiResponse]);
+
+      toast.success("Code reviewed successfully!");
       
     } catch (error) {
-      
+      toast.error("Failed to review code. Please try again.");
+      console.error("Review Error:", error);
     }
+    setIsReviewing(false);
 
   };
 
@@ -211,7 +218,7 @@ const CodeEdit = ({ value = "", onChange }) => {
 
             <div className='flex items-center gap-4'>
               <button
-                disabled={isRunning || local.trim() === "" || local.length < 10}
+                disabled={isRunning || local.trim() === "" || local.length < 10 || isReviewing}
                 onClick={handleRun}
                 className='flex items-center space-x-2 px-4 py-2 disabled:opacity-50 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 shadow-sm'
               >
@@ -220,11 +227,11 @@ const CodeEdit = ({ value = "", onChange }) => {
                 <span className='max-[1200px]:hidden'>Run</span>
               </button>
               <button
-                disabled={isRunning || local.trim() === "" || local.length < 10}
+                disabled={isRunning || local.trim() === "" || local.length < 10 || isReviewing}
                 onClick={handleReview}
                 className='flex items-center space-x-2 px-4 py-2 disabled:opacity-50 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 shadow-sm'
               >
-                <Eye size={16} />
+                {isReviewing ? <MoonLoader size={16} color="#b3ffba" /> : <Eye size={16} />}
                 <span className='max-[1200px]:hidden'>Review</span>
               </button>
               <button

@@ -7,6 +7,9 @@ import App from './App.jsx'
 
 import SimpleChat from './pages/SimpleChat.jsx';
 import CodeEdit from './pages/CodeEdit.jsx';
+import Tools from './pages/Tools.jsx';
+import About from './pages/About.jsx';
+import Contact from './pages/Contact.jsx';
 import { ChatProvider } from './context/chatUnderstand.jsx';
 import { ChatIndexProvider } from './context/chatIndex.jsx';
 
@@ -38,7 +41,31 @@ const router = createBrowserRouter([
         <CodeEdit />
       </>
     ),
-  }
+  },
+  {
+    path: "/tools",
+    element: (
+      <>
+        <Tools />
+      </>
+    ),
+  },
+  {
+    path: "/contact",
+    element: (
+      <>
+        <Contact />
+      </>
+    ),
+  },
+  {
+    path: "/about",
+    element: (
+      <>
+        <About />
+      </>
+    ),
+  },
 ]);
 
 createRoot(document.getElementById('root')).render(

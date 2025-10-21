@@ -1,10 +1,17 @@
 import express from "express";
 import axios from "axios";
 import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 const editorRouter = express.Router();
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({
+  path: path.resolve(__dirname, ".env"),
+});
+console.log("Loaded VITE_API_KEY:", process.env.VITE_API_KEY);
 
 const genAI = new GoogleGenerativeAI(process.env.VITE_API_KEY);
 
@@ -115,7 +122,7 @@ You are an expert competitive programming assistant. Always follow these rules s
 });
 
 editorRouter.post("/api/chat",async(req,res)=>{
-  const {message,code} = req.body;
+  const {message,code, chatHistory} = req.body;
   console.log("Chat message received:", message);
   console.log("Code context:", code);
   try {

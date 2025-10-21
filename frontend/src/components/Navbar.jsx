@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import MainLogo from "../assets/images/MainLogo.jpg";
+import { Link, Navigate, NavLink } from "react-router-dom";
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { name: "Home", href: "#home" },
-    { name: "Tools", href: "#tools" },
-    { name: "Contact", href: "#contact" },
-    { name: "About", href: "#about" }
+    { name: "Home", to: "/" },
+    { name: "Tools", to: "/tools" },
+    { name: "Contact", to: "/contact" },
+    { name: "About", to: "/about" }
   ];
 
   return (
@@ -28,13 +29,13 @@ export const Navbar = () => {
           <ul className="hidden md:flex justify-center gap-8 items-center text-base lg:text-lg text-white/60 font-medium">
             {navItems.map((item) => (
               <li key={item.name}>
-                <a
-                  href={item.href}
-                  className="hover:text-white transition-all duration-300 relative group"
+                <NavLink
+                  to={item.to}
+                  className={({isActive})=>`hover:text-white ${isActive && 'text-white'} transition-all duration-300 relative group`}
                 >
                   {item.name}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 group-hover:w-full transition-all duration-300"></span>
-                </a>
+                </NavLink>
               </li>
             ))}
           </ul>
@@ -55,13 +56,13 @@ export const Navbar = () => {
             <ul className="flex flex-col gap-3">
               {navItems.map((item) => (
                 <li key={item.name}>
-                  <a
-                    href={item.href}
-                    className="block py-2 px-4 text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300 font-medium"
+                  <NavLink
+                    to={item.to}
+                    className={({isActive})=>`block py-2 px-4 ${isActive && 'text-white'} text-white/60 hover:text-white hover:bg-white/5 rounded-lg transition-all duration-300 font-medium`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {item.name}
-                  </a>
+                  </NavLink>
                 </li>
               ))}
             </ul>
