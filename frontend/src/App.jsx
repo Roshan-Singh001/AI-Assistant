@@ -1,5 +1,6 @@
 import axios from "axios";
 import Aurora from './components/Aurora';
+import { useSession } from "./utils/auth_client";
 
 import "regenerator-runtime/runtime";
 import { useNavigate } from "react-router-dom";
@@ -34,6 +35,7 @@ const AxiosInstance = axios.create({
 
 function App() {
   const navigate = useNavigate();
+  const {data: session, isPending, error, refetch } = useSession();
 
   const handleToolClick = (tool) => {
     navigate(`/tool/${tool}`);
@@ -144,10 +146,10 @@ function App() {
 
             {/* Call to action */}
             <div className="border-t text-center pt-4">
-              <p className="text-slate-400 mb-6 text-lg">
+              {/* <p className="text-slate-400 mb-6 text-lg">
                 Ready to get started? Pick a tool above or start with a
                 general conversation.
-              </p>
+              </p> */}
 
               <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
                 <div>

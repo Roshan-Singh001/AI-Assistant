@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
+import MainLogo from "../assets/images/MainLogo.png";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { authClient } from "../utils/auth_client";
 import { v4 as uuidv4 } from "uuid";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -38,6 +40,7 @@ const AxiosInstance = axios.create({
 
 const SimpleChat = () => {
   const [message, setMessage] = useState("");
+  const {data: session} = authClient.useSession();
   const [chatai, setChatai] = useState([]);
   const { chatSessions, setChatSessions } = useContext(ChatContext);
   const { chatIndex, setChatIndex } = useContext(ChatIndex);
@@ -308,7 +311,7 @@ const SimpleChat = () => {
                         </button>
                       )}
                       <div className="flex items-center gap-2">
-                        <FaRobot className="text-blue-400 text-xl" />
+                        <img className="w-10 h-10 sm:w-12 sm:h-12" src={MainLogo} alt="Simpl AI Logo" srcset="" />
                         <h1 className="text-xl font-bold text-white">SIMPL-AI</h1>
                       </div>
                     </div>
@@ -336,10 +339,10 @@ const SimpleChat = () => {
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                   {chatai.length === 0 && (
                     <div className="flex-1 flex items-center justify-center">
-                      <div className="text-center text-gray-400 max-w-md">
-                        <FaRobot className="text-6xl text-gray-600 mx-auto mb-4" />
+                      <div className="flex flex-col justify-center items-center  text-gray-400 max-w-md">
+                        <img className="w-12 h-12 sm:w-[5rem] sm:h-[5rem]" src={MainLogo} alt="Simpl AI Logo"/>
                         <h2 className="text-2xl font-bold mb-2">Welcome to SIMPL-AI</h2>
-                        <p>Start a conversation by typing a message below. I'm here to help with any questions you have!</p>
+                        <p className="text-center">Start a conversation by typing a message below. I'm here to help with any questions you have!</p>
                       </div>
                     </div>
                   )}

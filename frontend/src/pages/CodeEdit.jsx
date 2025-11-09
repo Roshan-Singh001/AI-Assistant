@@ -2,6 +2,7 @@ import React from 'react'
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import MoonLoader from 'react-spinners/MoonLoader';
 import axios from 'axios';
+import MainLogo from '../assets/images/MainLogo.png';
 import { toast } from "react-toastify";
 import CodeMirror from '@uiw/react-codemirror';
 import { EditorView, keymap } from "@codemirror/view"
@@ -64,6 +65,9 @@ const CodeEdit = ({ value = "", onChange }) => {
         },
         '.ͼo': {
           background: '#000000',
+        },
+        'cm-theme-dark':{
+          height: '100vh',
         }
       })
     ];
@@ -191,7 +195,8 @@ const CodeEdit = ({ value = "", onChange }) => {
         <div className='flex max-[1020px]:flex-col justify-between p-4 bg-black border-b border-gray-700 shadow-sm'>
           <div className='flex '>
             <div className='flex max-[1020px]:w-screen justify-between items-center gap-4'>
-              <div>
+              <div className='flex items-center gap-[0.2rem]'>
+                <img className="w-10 h-10 sm:w-12 sm:h-12" src={MainLogo} alt="Simpl AI Logo" srcset="" />
                 <h1 className='text-lg font-semibold text-white'>SIMPL-AI Editor</h1>
               </div>
               <div className='flex items-center space-x-2'>
@@ -312,7 +317,7 @@ const CodeEdit = ({ value = "", onChange }) => {
               {/* Header */}
               <div className='w-screen px-4 py-3 bg-[#252526] border-b border-[#3e3e42] flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
-                  <BotMessageSquare className='w-4 h-4 text-purple-400' />
+                  <img className="w-3 h-3 sm:w-4 sm:h-4" src={MainLogo} alt="Simpl AI Logo" />
                   <h3 className='text-sm font-semibold text-gray-200'>AI Assistant</h3>
                 </div>
               </div>
@@ -322,7 +327,7 @@ const CodeEdit = ({ value = "", onChange }) => {
                 {chatMessages.length === 0 ? (
                   <div className='flex flex-col items-center justify-center h-full text-center'>
                     <div className='w-16 h-16 mb-4 rounded-full bg-purple-500/10 flex items-center justify-center'>
-                      <Bot className='w-8 h-8 text-purple-400' />
+                      <img className="w-6 h-6 sm:w-8 sm:h-8" src={MainLogo} alt="Simpl AI Logo" srcset="" />
                     </div>
                     <p className='text-gray-400 text-sm font-medium mb-2'>Start a conversation</p>
                     <p className='text-gray-500 text-xs max-w-xs'>
@@ -345,7 +350,6 @@ const CodeEdit = ({ value = "", onChange }) => {
                             <UserRound className='w-5 h-5 text-white' />
                           ) : (
                             <Bot className='w-5 h-5 text-white' />
-
                           )}
                         </div>
 

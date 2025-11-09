@@ -3,6 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from "uuid";
+import { authClient } from '../utils/auth_client';
 
 // Icons
 import { IoMdAdd } from "react-icons/io";
@@ -27,6 +28,7 @@ const AxiosInstance = axios.create({
 
 const History = () => {
   const [Search, setSearch] = useState('');
+  const {data: session} = authClient.useSession();
   const { chatSessions, setChatSessions } = useContext(ChatContext);
   const { chatIndex, setChatIndex } = useContext(ChatIndex);
   const [toggleSearch, settoggleSearch] = useState(false);
@@ -310,7 +312,13 @@ const History = () => {
           )}
           
           <div className='p-2'>
-            {chatInstance.length === 0 && (
+          {!session?<>
+              <div className="text-red-400 text-sm text-center mb-4">Please login to view chat index.</div>
+              <button>Login</button>
+
+            </>:
+            <>
+            {(chatInstance.length === 0) && (
               <div className='flex flex-col items-center justify-center py-12 text-gray-500'>
                 <div className='w-16 h-16 rounded-full bg-gray-800 flex items-center justify-center mb-4'>
                   <IoMdAdd className='text-2xl' />
@@ -428,6 +436,10 @@ const History = () => {
                 )}
               </div>
             ))}
+            
+            </>
+          }
+
           </div>
         </div>
       </section>

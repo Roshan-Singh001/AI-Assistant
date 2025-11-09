@@ -5,6 +5,8 @@ import Aurora from '../components/Aurora'
 const Contact = () => {
   return (
     <>
+    <div className='min-h-screen relative overflow-hidden'>
+
       <Navbar/>
             <div className="absolute inset-0 -z-10">
                     <Aurora
@@ -19,6 +21,7 @@ const Contact = () => {
               <h1 className='text-4xl text-white font-bold'>Contact</h1>
               <div className='bg-white w-[7rem] mt-2 h-[0.1rem]'></div>
             </div>
+    </div>
     </>
   )
 }

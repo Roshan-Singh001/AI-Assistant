@@ -20,7 +20,7 @@ const About = () => {
               <h1 className='text-4xl text-white font-bold'>About</h1>
               <div className='bg-white w-[7rem] mt-2 h-[0.1rem]'></div>
             </div>
-            <div className='mt-4 w-[80%] backdrop-blur-lg border border-white/30  bg-white/10 p-4 rounded-2xl m-auto text-white text-lg'>
+            <div className='mt-4 w-[80%] max-[462px]:w-[90%] backdrop-blur-lg border border-white/30  bg-white/10 p-4 rounded-2xl m-auto text-white text-lg'>
               <p>
                 <strong>Simpl-AI</strong> is an innovative platform designed to bring the power of 
                 artificial intelligence closer to everyone — in the simplest, most intuitive way 

@@ -1,10 +1,17 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
-import MainLogo from "../assets/images/MainLogo.jpg";
-import { Link, Navigate, NavLink } from "react-router-dom";
+import MainLogo from "../assets/images/MainLogo.png";
+import { NavLink, useNavigate } from "react-router-dom";
+import { authClient} from "../utils/auth_client";
+import { toast } from "react-toastify";
+import MoonLoader from "react-spinners/MoonLoader";
 
 export const Navbar = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const {data: session} = authClient.useSession();
+  console.log("Session data in Navbar.jsx:", session);
 
   const navItems = [
     { name: "Home", to: "/" },
@@ -19,10 +26,7 @@ export const Navbar = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div className="flex items-center">
-            <img className="w-10 h-10 sm:w-12 sm:h-12" src={MainLogo} alt="" srcset="" />
-            {/* <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold text-xl sm:text-2xl shadow-lg transform hover:scale-105 transition-transform duration-300">
-              S
-            </div> */}
+            <img className="w-10 h-10 sm:w-12 sm:h-12" src={MainLogo} alt="Simpl AI Logo"/>
           </div>
 
           {/* Desktop Navigation */}
@@ -38,6 +42,38 @@ export const Navbar = () => {
                 </NavLink>
               </li>
             ))}
+            {session?<>
+              <button onClick={async(e)=>{
+                e.preventDefault();
+                await authClient.signOut({
+                  fetchOptions:{
+                    onRequest: (ctx)=>{
+                      setLoading(true);
+                    },
+                    onResponse: (ctx)=>{
+                      setLoading(false);
+                    },
+                    onSuccess: (ctx)=>{
+                      toast.success("Logged out successfully");
+                      navigate("/login");
+                    },
+                    onError: (ctx)=>{
+                      toast.error("Error signing out: " + ctx.error.message);
+                    }
+
+                  }
+                })
+
+
+              }}
+              disabled={loading}
+              className={`flex justify-center items-center text-white disabled:opacity-50 ${session.session?'bg-gray-500 hover:bg-gray-800':'bg-sky-400 hover:bg-sky-700'}  hover:border hover:border-gray-200 transition-colors py-2 px-4 rounded-lg`}>
+                <span className={`${loading && 'hidden'}`}>Logout</span>
+
+                {loading && <MoonLoader size={16} color="#b3ffba" />}
+              </button>
+            
+            </>: <button className="bg-sky-400 text-white hover:bg-sky-700 hover:border hover:border-gray-200 transition-colors py-2 px-4 rounded-lg">Login</button>}
           </ul>
 
           {/* Mobile Menu Button */}

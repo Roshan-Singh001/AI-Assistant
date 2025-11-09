@@ -10,6 +10,8 @@ import CodeEdit from './pages/CodeEdit.jsx';
 import Tools from './pages/Tools.jsx';
 import About from './pages/About.jsx';
 import Contact from './pages/Contact.jsx';
+import Register from './pages/auth/Register.jsx';
+import Login from './pages/auth/Login.jsx';
 import { ChatProvider } from './context/chatUnderstand.jsx';
 import { ChatIndexProvider } from './context/chatIndex.jsx';
 
@@ -63,6 +65,22 @@ const router = createBrowserRouter([
     element: (
       <>
         <About />
+      </>
+    ),
+  },
+  {
+    path: "/register",
+    element: (
+      <>
+        <Register />
+      </>
+    ),
+  },
+  {
+    path: "/login",
+    element: (
+      <>
+        <Login />
       </>
     ),
   },
