@@ -19,6 +19,7 @@ import { ChatHistoryContext } from '../context/chathistory';
 import { AllChatsContext } from '../context/chats';
 import { ChatContext } from '../context/chatUnderstand';
 import { ChatIndex } from '../context/chatIndex';
+import { use } from 'react';
 
 const AxiosInstance = axios.create({
   baseURL: 'http://localhost:3000/',
@@ -74,7 +75,11 @@ const History = () => {
     settoggleSearch(false);
     setSearch('');
     try {
-      const { data: instances_Data } = await AxiosInstance.get(`/all_instance`);
+      const { data: instances_Data } = await AxiosInstance.get(`/chat/api/all_instance`,{
+        headers: { 
+          userId: session.user.id 
+        }
+      });
       instances_Data.forEach((row) => {
         delete row.timestamp;
       });
@@ -109,7 +114,11 @@ const History = () => {
     set_instance(updatedInstances);
     
     try {
-      const { data: chatData } = await AxiosInstance.get(`/chat/${instance_id}`);
+      const { data: chatData } = await AxiosInstance.get(`/chat/api/chat/${instance_id}`,{
+        headers:{
+          userId: session.user.id
+        }
+      });
       chatData.forEach((row) => {
         delete row.timestamp;
       });
@@ -142,7 +151,11 @@ const History = () => {
       set_chats(transformedChatData);
       console.log(transformedChatData);
 
-      const response = await AxiosInstance.get(`/fetch/chat_index/${instance_id}`);
+      const response = await AxiosInstance.get(`/chat/api/chat_index/${instance_id}`,{
+        headers:{
+          userId: session.user.id
+        }
+      });
       setChatIndex(response.data);
       console.log("Fetched chat index:", response.data);
     } catch (error) {
@@ -156,7 +169,9 @@ const History = () => {
     const New_Chat_id = n_id.replaceAll("-", "_");
     
     try {
-      await AxiosInstance.post(`/newchat/${New_Chat_id}`);
+      await AxiosInstance.post(`/chat/api/newchat/${New_Chat_id}`,{
+        userId: session.user.id,
+      });
     } catch (error) {
       notify("Failed to save data in the database");
       return;
@@ -175,7 +190,8 @@ const History = () => {
     set_chats([]);
     
     try {
-      await AxiosInstance.post(`/instance/${New_Chat_id}`, {
+      await AxiosInstance.post(`/chat/api/instance/${New_Chat_id}`, {
+        userId: session.user.id,
         topic: "New Chat", 
         is_active: true
       });
@@ -186,7 +202,9 @@ const History = () => {
 
   const handleInstanceDelete = async (instance_id) => {
     try {
-      await AxiosInstance.post(`/instance_delete/${instance_id}`);
+      await AxiosInstance.post(`/chat/api/instance_delete/${instance_id}`,{
+        userId: session.user.id,
+      });
     } catch (error) {
       notify("Failed to delete chat from the database");
       return;
@@ -212,7 +230,7 @@ const History = () => {
       set_instance(updatedInstances);
       
       try {
-        await AxiosInstance.post(`/instance_topic/${itemId}`, { topic: newTopic });
+        await AxiosInstance.post(`/chat/api/instance_topic/${itemId}`, { topic: newTopic, userId: session.user.id });
       } catch (error) {
         notify("Failed to save topic change in the database");
       }

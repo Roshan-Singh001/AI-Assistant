@@ -2,6 +2,13 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { authClient } from '../../utils/auth_client';
 import { toast } from "react-toastify";
+import axios from "axios";
+
+const AxiosInstance = axios.create({
+  baseURL: 'http://localhost:3000/',
+  timeout: 3000,
+  headers: {'X-Custom-Header': 'foobar'}
+});
 
 const Register = () => {
   const navigate = useNavigate();
@@ -44,13 +51,23 @@ const Register = () => {
         onRequest: (ctx) => {
           //show loading
         },
-        onSuccess: (ctx) => {
+        onSuccess: async(ctx) => {
+          toast.success("Registration successful!");
           navigate("/login");
         },
         onError: (ctx) => {
           toast.error(ctx.error.message);
         },
       });
+
+
+      try {
+        await AxiosInstance.post('/api/new_user',{
+          userId: data.user.id,
+        })
+      } catch (error) {
+        console.error("Error in creating user tables:", error);
+      }
       console.log("Registration data:", data, error);
     } catch (err) {
       console.error("Register error:", err);

@@ -86,8 +86,16 @@ const SimpleChat = () => {
 
   useEffect(() => {
     const initializeChats = async () => {
+      if (!session?.user?.id) return;
+
+      console.log("Fetching chat instances for userId:", session?.user.id);
+      console.log("Session data:", session);
       try {
-        const { data: instances_Data } = await AxiosInstance.get(`/all_instance`);
+        const { data: instances_Data } = await AxiosInstance.get(`/chat/api/all_instance`, {
+          headers:{
+            userId: session.user.id
+          },
+        });
         const transformedInstanceData = instances_Data.map((instance) => ({
           id: instance.instance_id,
           topic: instance.topic_message,
@@ -101,7 +109,7 @@ const SimpleChat = () => {
     };
 
     initializeChats();
-  }, []);
+  }, [session]);
 
   // Handle speech recognition transcript
   useEffect(() => {
@@ -149,7 +157,9 @@ const SimpleChat = () => {
     const New_Chat_id = n_id.replaceAll("-", "_");
 
     try {
-      await AxiosInstance.post(`/newchat/${New_Chat_id}`);
+      await AxiosInstance.post(`/chat/api/newchat/${New_Chat_id}`,{
+        userId: session.user.id,
+      });
     } catch (error) {
       console.log("Error creating new chat:", error);
       toast.error("Failed to save data in the database");
@@ -169,7 +179,8 @@ const SimpleChat = () => {
     setChatai([]);
 
     try {
-      await AxiosInstance.post(`/instance/${New_Chat_id}`, {
+      await AxiosInstance.post(`/chat/api/instance/${New_Chat_id}`, {
+        userId: session.user.id,
         topic: "New Chat",
         is_active: false,
       });
@@ -200,7 +211,8 @@ const SimpleChat = () => {
     setChatai(prev => [...prev, userMessage]);
 
     try {
-      await AxiosInstance.post(`/go/${chat_active_id}`, {
+      await AxiosInstance.post(`/chat/api/go/${chat_active_id}`, {
+        userId: session.user.id,
         id: userMessageId,
         message: prompt,
         is_human: true,
@@ -226,7 +238,8 @@ const SimpleChat = () => {
 
 
       try {
-        await AxiosInstance.post(`/go/${chat_active_id}`, {
+        await AxiosInstance.post(`/chat/api/go/${chat_active_id}`, {
+          userId: session.user.id,
           id: aiMessageId,
           message: ai_result,
           is_human: false,
@@ -245,7 +258,7 @@ const SimpleChat = () => {
           item.is_active ? { ...item, topic } : item
         ));
 
-        await AxiosInstance.post(`/instance_topic/${chat_active_id}`, { topic });
+        await AxiosInstance.post(`/chat/api/instance_topic/${chat_active_id}`, { topic, userId: session.user.id });
       }
 
       const indexPrompt = `Generate a concise 2-4 word topic for this particular conversation without using any special characters like. User: "${prompt}" AI(You): "${ai_result}"`;
@@ -253,7 +266,7 @@ const SimpleChat = () => {
       const index = indexResult.response.text().replace(/['"*]/g, '').trim();
       console.log("Index:", index);
 
-      await AxiosInstance.post(`/chat_index/${chat_active_id}`, { userMessageId, index: index || "General" });
+      await AxiosInstance.post(`/chat/api/chat_index/${chat_active_id}`, { userMessageId, index: index || "General", userId: session.user.id });
 
       if (chatIndex.length > 0) {
         setChatIndex(prev => [...prev, { index_id: userMessageId, index_name: index || "General" }]);
@@ -311,8 +324,8 @@ const SimpleChat = () => {
                         </button>
                       )}
                       <div className="flex items-center gap-2">
-                        <img className="w-10 h-10 sm:w-12 sm:h-12" src={MainLogo} alt="Simpl AI Logo" srcset="" />
-                        <h1 className="text-xl font-bold text-white">SIMPL-AI</h1>
+                        <img className="w-10 h-10 sm:w-12 sm:h-12" src={MainLogo} alt="Simpl AI Logo" />
+                        <h1 className="text-xl font-bold text-white">SIMPL-AI Chat</h1>
                       </div>
                     </div>
 
@@ -407,7 +420,7 @@ const SimpleChat = () => {
 
                 {/* Input Area */}
                 <div className="bg-gray-800/50 backdrop-blur-sm border-t border-gray-700 p-4">
-                  <div className="flex items-end gap-3">
+                  <div className="flex items-center gap-3">
                     <div className="flex-1 relative">
                       <textarea
                         ref={textareaRef}

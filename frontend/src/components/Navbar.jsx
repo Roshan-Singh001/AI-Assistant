@@ -63,17 +63,20 @@ export const Navbar = () => {
 
                   }
                 })
-
-
               }}
               disabled={loading}
               className={`flex justify-center items-center text-white disabled:opacity-50 ${session.session?'bg-gray-500 hover:bg-gray-800':'bg-sky-400 hover:bg-sky-700'}  hover:border hover:border-gray-200 transition-colors py-2 px-4 rounded-lg`}>
                 <span className={`${loading && 'hidden'}`}>Logout</span>
 
-                {loading && <MoonLoader size={16} color="#b3ffba" />}
+                {loading && <MoonLoader size={16} color="#ffffffff" />}
               </button>
             
-            </>: <button className="bg-sky-400 text-white hover:bg-sky-700 hover:border hover:border-gray-200 transition-colors py-2 px-4 rounded-lg">Login</button>}
+            </>: <button
+             onClick={(e)=>{
+              e.preventDefault();
+              navigate("/login");
+             }}
+             className="bg-sky-400 text-white hover:bg-sky-700 hover:border hover:border-gray-200 transition-colors py-2 px-4 rounded-lg">Login</button>}
           </ul>
 
           {/* Mobile Menu Button */}

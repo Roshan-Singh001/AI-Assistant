@@ -8,8 +8,6 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-console.log("DB HOST:",process.env.DB_HOST);
-
 
 export const auth = betterAuth({
     database: createPool({
@@ -20,7 +18,14 @@ export const auth = betterAuth({
         port: 3306,
     }),
     emailAndPassword: { 
-        enabled: true, 
+      enabled: true,
+    //   sendVerificationEmail: async ( { user, url, token }, request) => {
+    //   await sendEmail({
+    //     to: user.email,
+    //     subject: "Verify your email address",
+    //     text: `Click the link to verify your email: ${url}`,
+    //   });
+    // }, 
     },
     session: {
     // default settings or your custom
@@ -32,6 +37,5 @@ export const auth = betterAuth({
       sameSite: 'lax',
     }
   },
-  // trusted origins; set your React frontend origin
   trustedOrigins: ['http://localhost:5173'],
 })
