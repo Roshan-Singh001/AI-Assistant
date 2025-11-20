@@ -1,137 +1,232 @@
-# Simpl-AI: A Generative AI Chatbot with Speech Recognition & History Management
+# **Simpl-AI: A Modern Platform of Intelligent Tools**
 
-Welcome to **Simpl-AI**, a modern AI-powered chatbot built with the **Google Gemini API**, **React.js**, **Node.js**, and **MySQL**. This project offers an intuitive platform for real-time conversations with an AI, featuring a history sidebar that allows users to search, edit, and delete previous interactions.
+<div style="text-align: center;">
+  <img src="Images/Logo/MainLogo2.png" alt="Logo" width="300" height="auto">
+</div>
 
-## 🚀 Features
 
-- **Generative AI Conversations**: Utilize the power of **Google Gemini API** to generate real-time AI responses.
-- **Speech Recognition**: Supports voice commands for hands-free interaction via the **React Speech Recognition** library. (Only Chrome Browser Supported)
-- **Chat History Management**: Search, edit, and delete past conversations in an intuitive sidebar.
-- **Real-Time Interaction**: Built with **React.js** for fast and dynamic updates.
-- **Full-Stack Application**: Powered by **Node.js** backend, **MySQL** database, and **Axios** for API calls.
+**Simpl-AI** is an innovative platform designed to bring the power of artificial intelligence closer to everyone — in the simplest, most intuitive form possible. Built around the belief that advanced technology should feel effortless, Simpl-AI delivers a suite of intelligent tools that enhance creativity, productivity, learning, and problem-solving across multiple domains.
 
-## 📸 Screenshots
+Whether you are a student exploring new concepts, a developer building efficient logic, or a professional automating repetitive tasks, Simpl-AI offers a clean, flexible, and human-centered AI experience.
 
-#### Main Chat Interface:
-![Main Chat](screenshots/Mainph.png)
-![Main Chat](screenshots/Mainph2.png)
-
-#### History Sidebar:
-![History Sidebar](screenshots/3.png)
-![History Sidebar](screenshots/4.png)
-![History Sidebar](screenshots/5.png)
-![History Sidebar](screenshots/6.png)
-![History Sidebar](screenshots/7.png)
-![History Sidebar](screenshots/8.png)
-
-#### Speech Recognition in Action:
-![Speech Recognition](screenshots/9.png)
-
-#### Mobile View:
-![Mobile View](screenshots/Mobile1.jpg)
-![Mobile View](screenshots/Mobile2.jpg)
-
-## 🔧 Tech Stack
-
-- **Frontend**:
-  - React.js with **Hooks** and **Context API** for state management
-  - **React Speech Recognition** for voice commands
-  - **Axios** for HTTP requests
-  - **React Toastify** for notifications
-- **Backend**:
-  - **Node.js** with **Express.js** for the server
-  - **MySQL** database for storing chat instances and user data
-  - **Google Gemini API** for AI-generated content
-- **Other**:
-  - **UUID** for unique identifiers
-  - **Regenerator Runtime** for asynchronous code
-
-## 🛠️ Installation
-
-### Prerequisites
-
-- **Node.js**: Make sure you have **Node.js** (version 14 or above) installed. You can download it from [here](https://nodejs.org/).
-- **MySQL**: You need a MySQL server running for the backend to store chat instances.
-
-### Backend Setup
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/Roshan-Singh001/AI-Assistant
-   cd AI-Assistant-ai
-   ```
-
-2. Install backend dependencies:
-
-   ```bash
-   cd backend
-   npm install
-   ```
-
-3. Set up your MySQL database:
-   - Create a new database and configure the necessary tables for storing chat instances.
-   - Update the database credentials in the `config.js` file.
-
-4. Start the backend server:
-
-   ```bash
-   npm start
-   ```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-
-   ```bash
-   cd frontend
-   ```
-
-2. Install frontend dependencies:
-
-   ```bash
-   npm install
-   ```
-
-3. Set your Google Gemini API key in the `.env` file:
-
-   ```
-   VITE_API_KEY=your_google_gemini_api_key
-   ```
-
-4. Start the React development server:
-
-   ```bash
-   npm start
-   ```
-
-5. Visit `http://localhost:3000` to view the application in your browser.
-
-## ⚙️ Usage
-
-- **Start a New Chat**: Click the "Start a Chat" button to initiate a fresh conversation with the AI.
-- **Search Chat History**: Use the search bar in the **History Sidebar** to quickly find past chats.
-- **Edit Chat Topics**: Click the edit icon next to any chat instance to update the topic.
-- **Voice Input**: Use the microphone button to input messages via speech recognition.
-
-## 📝 Contributing
-
-1. Fork the repository
-2. Create a new branch (`git checkout -b feature-branch`)
-3. Make your changes
-4. Commit your changes (`git commit -am 'Add new feature'`)
-5. Push to the branch (`git push origin feature-branch`)
-6. Open a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Currently, Simpl-AI includes two core tools, with many more under development.
 
 ---
 
-### 🤖 Powered by:
+## **🚀 Platform Tools**
 
-- **Google Gemini API** for generative AI
-- **React.js** for building interactive user interfaces
-- **Node.js** and **MySQL** for backend and database management
-- **Speech Recognition** for hands-free interaction
+### **1. AI Chat Assistant (with History & Voice Input)**
+
+The Chat Assistant is a real-time conversational interface powered by the Google Gemini API.
+
+**Key Capabilities:**
+
+* **AI Conversations** for learning, brainstorming, and problem-solving.
+* **Conversation History Management**
+
+  * Create multiple chat instances
+  * Rename chats
+  * Delete chats
+  * Search across previous conversations
+* **Chat Indexing**
+  Navigate long conversations instantly using an auto-generated chat index.
+* **Speech-to-Text Input**
+  Fast voice-based interaction using `react-speech-recognition` (Chrome only).
+* **Clean and Responsive UI** optimized for both desktop and mobile.
+
+---
+
+### **2. Intelligent Code Editor (DSA & IO-Based Coding)**
+
+A specialized code editor built for algorithmic and input-output style problems.
+
+**How It Works:**
+
+* You write only the **core logic** of the program.
+* AI automatically injects:
+
+  * Boilerplate code
+  * Input/output handling
+  * Five autogenerated test cases
+* Code is executed on **Judge0** with support for:
+
+  * **C++**
+  * **Java**
+  * **JavaScript**
+  * **Python**
+* Includes an **in-tool AI Assistant** for code-related queries.
+* Enables fast prototyping, learning, and debugging.
+
+---
+
+## **🛠️ Tech Stack**
+
+### **Frontend**
+
+* React.js (Hooks + Context API)
+* Tailwind CSS
+* CodeMirror (code editor)
+* Axios
+* React Toastify
+* react-speech-recognition
+
+### **Backend**
+
+* Node.js (Express.js)
+* MySQL
+* Google Gemini API (Generative AI)
+* Judge0 API (Code execution)
+* Better-Auth (Authentication layer)
+
+### **Other**
+
+* UUID for unique identifiers
+* Regenerator Runtime for async handling
+
+---
+
+## **📁 Project Structure**
+
+```
+simpl-ai/
+   ├── frontend/
+   ├── backend/
+   └── README.md
+```
+
+---
+
+## **🔐 Environment Variables**
+
+### **Backend `.env`**
+
+```
+DATABASE_PASS
+DB_HOST
+DB_USER
+DB_NAME
+
+# Gemini API
+VITE_API_KEY
+
+# Judge0 API
+RAPIDAPI_KEY
+
+# Authentication
+BETTER_AUTH_SECRET
+BETTER_AUTH_URL
+
+NODE_ENV="development" or "production"
+```
+
+### **Frontend `.env`**
+
+```
+VITE_API_KEY (gemini)
+RAPIDAPI_KEY
+```
+
+---
+
+## **📦 Installation & Setup**
+
+### **Prerequisites**
+
+* Node.js 14+
+* MySQL Server
+* A valid Gemini API key
+* A RapidAPI (Judge0) key
+
+---
+
+### **Backend Setup**
+
+```bash
+git clone https://github.com/Roshan-Singh001/Simpl-AI
+cd Simpl-AI/backend
+npm install
+```
+
+1. Create a MySQL database.
+2. Configure `.env` with your credentials.
+3. Start the server:
+
+```bash
+npm start
+```
+
+---
+
+### **Frontend Setup**
+
+```bash
+cd ../frontend
+npm install
+```
+
+Add the required variables to the `.env` file.
+
+Start the development server:
+
+```bash
+npm start
+```
+
+Visit:
+
+```
+http://localhost:5173
+```
+
+---
+
+## **🧑‍💻 Usage Overview**
+
+### **Chat Assistant**
+
+* Start or switch between chat instances.
+* Search or rename chats.
+* Use voice input for faster interaction.
+* Navigate long chats using the indexed menu.
+
+### **Code Editor**
+
+* Write only the core logic.
+* Let AI produce boilerplate and generate test cases.
+* Run code on Judge0.
+* Chat with the integrated AI assistant for help.
+
+---
+
+## **🤝 Contributing**
+
+Contributions are welcome.
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Submit a pull request
+
+---
+
+## **📄 License**
+
+This project is released under the **MIT License**.
+
+---
+
+## **⚡ Powered By**
+
+* Google Gemini API
+* Node.js + MySQL
+* Judge0 API
+* React.js
+* Better-Auth
+* CodeMirror
+* Tailwind CSS
+* React-Speech-Recognition
+
+---
+
+If you want, I can also format it with GitHub badges, add a logo banner, or rewrite it in a more promotional start-up style.
+

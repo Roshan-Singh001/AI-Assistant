@@ -11,12 +11,10 @@ export const Navbar = () => {
   const [loading, setLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const {data: session} = authClient.useSession();
-  console.log("Session data in Navbar.jsx:", session);
 
   const navItems = [
     { name: "Home", to: "/" },
     { name: "Tools", to: "/tools" },
-    { name: "Contact", to: "/contact" },
     { name: "About", to: "/about" }
   ];
 

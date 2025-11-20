@@ -1,6 +1,5 @@
 import axios from "axios";
 import Aurora from './components/Aurora';
-import { useSession } from "./utils/auth_client";
 
 import "regenerator-runtime/runtime";
 import { useNavigate } from "react-router-dom";
@@ -35,7 +34,6 @@ const AxiosInstance = axios.create({
 
 function App() {
   const navigate = useNavigate();
-  const {data: session, isPending, error, refetch } = useSession();
 
   const handleToolClick = (tool) => {
     navigate(`/tool/${tool}`);
@@ -98,10 +96,10 @@ function App() {
                 WHAT CAN I HELP WITH?
               </h2>
 
-              <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+              {/* <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
                 Choose from our AI-powered writing tools to create
                 professional content in seconds
-              </p>
+              </p> */}
             </div>
 
             {/* Tools grid */}
