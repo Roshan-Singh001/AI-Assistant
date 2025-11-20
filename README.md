@@ -215,18 +215,3 @@ This project is released under the **MIT License**.
 
 ---
 
-## **⚡ Powered By**
-
-* Google Gemini API
-* Node.js + MySQL
-* Judge0 API
-* React.js
-* Better-Auth
-* CodeMirror
-* Tailwind CSS
-* React-Speech-Recognition
-
----
-
-If you want, I can also format it with GitHub badges, add a logo banner, or rewrite it in a more promotional start-up style.
-
