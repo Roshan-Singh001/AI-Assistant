@@ -40,7 +40,7 @@ const AxiosInstance = axios.create({
 
 const SimpleChat = () => {
   const [message, setMessage] = useState("");
-  const {data: session} = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const [chatai, setChatai] = useState([]);
   const { chatSessions, setChatSessions } = useContext(ChatContext);
   const { chatIndex, setChatIndex } = useContext(ChatIndex);
@@ -92,7 +92,7 @@ const SimpleChat = () => {
       console.log("Session data:", session);
       try {
         const { data: instances_Data } = await AxiosInstance.get(`/chat/api/all_instance`, {
-          headers:{
+          headers: {
             userId: session.user.id
           },
         });
@@ -157,7 +157,7 @@ const SimpleChat = () => {
     const New_Chat_id = n_id.replaceAll("-", "_");
 
     try {
-      await AxiosInstance.post(`/chat/api/newchat/${New_Chat_id}`,{
+      await AxiosInstance.post(`/chat/api/newchat/${New_Chat_id}`, {
         userId: session.user.id,
       });
     } catch (error) {
@@ -353,7 +353,7 @@ const SimpleChat = () => {
                   {chatai.length === 0 && (
                     <div className="flex-1 flex items-center justify-center">
                       <div className="flex flex-col justify-center items-center  text-gray-400 max-w-md">
-                        <img className="w-12 h-12 sm:w-[5rem] sm:h-[5rem]" src={MainLogo} alt="Simpl AI Logo"/>
+                        <img className="w-12 h-12 sm:w-[5rem] sm:h-[5rem]" src={MainLogo} alt="Simpl AI Logo" />
                         <h2 className="text-2xl font-bold mb-2">Welcome to SIMPL-AI</h2>
                         <p className="text-center">Start a conversation by typing a message below. I'm here to help with any questions you have!</p>
                       </div>
@@ -367,8 +367,8 @@ const SimpleChat = () => {
                     >
 
                       <div className={`max-w-[80%] sm:max-w-[70%] p-4 rounded-2xl ${item.isAi
-                          ? 'bg-gray-800/80 backdrop-blur-sm text-white border border-gray-700'
-                          : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
+                        ? 'bg-gray-800/80 backdrop-blur-sm text-white border border-gray-700'
+                        : 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
                         }`}>
                         <div className="flex items-center gap-2 mb-2">
                           {item.isAi ? (
@@ -444,8 +444,8 @@ const SimpleChat = () => {
                         type="button"
                         onClick={handleMic}
                         className={`p-3 rounded-xl transition-all ${mictoggle
-                            ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
-                            : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                          ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg'
+                          : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
                           }`}
                       >
                         {mictoggle ? (

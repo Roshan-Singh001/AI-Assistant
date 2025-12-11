@@ -17,7 +17,7 @@ import JavascriptLogo from '../assets/images/JavascriptLogo.png';
 import PythonLogo from '../assets/images/PythonLogo.png';
 import CppLogo from '../assets/images/CppLogo.png';
 import JavaLogo from '../assets/images/JavaLogo.png';
-import Chmarkdown from '../components/Chmarkdown';
+import ChmarkDownEdit from '../components/ChmarkDownEdit';
 
 const AxiosInstance = axios.create({
   baseURL: 'http://localhost:3000/',
@@ -358,12 +358,12 @@ const CodeEdit = ({ value = "", onChange }) => {
                           <span className='text-xs text-gray-500 px-1'>
                             {message.type === 'user' ? 'You' : 'AI Assistant'}
                           </span>
-                          <div className={`px-4 py-2.5 min-[340px]:w-[23rem] w-full rounded-2xl ${message.type === 'user'
-                            ? 'bg-blue-600 text-white rounded-tr-sm'
+                          <div className={`px-2 py-2.5 min-[340px]:w-[23rem] w-full rounded-2xl ${message.type === 'user'
+                            ? 'bg-[#393939] text-white rounded-tr-sm'
                             : 'bg-[#252526] text-gray-200 border border-[#3e3e42] rounded-tl-sm'
                             }`}>
                             <div className='text-sm whitespace-pre-wrap break-words'>
-                              {<Chmarkdown markdownStr={message.content} />}
+                              {<ChmarkDownEdit markdownStr={message.content} />}
                             </div>
                           </div>
                           {/* Timestamp */}

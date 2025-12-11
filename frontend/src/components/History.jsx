@@ -332,7 +332,7 @@ const History = () => {
           <div className='p-2'>
           {!session?<>
               <div className="text-red-400 text-sm text-center mb-4">Please login to view chat index.</div>
-              <button>Login</button>
+              
 
             </>:
             <>

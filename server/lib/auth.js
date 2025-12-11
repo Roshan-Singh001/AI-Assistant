@@ -10,26 +10,38 @@ dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 
 export const auth = betterAuth({
-    database: createPool({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DATABASE_PASS,
-        database: process.env.DB_NAME,
-        port: 3306,
-    }),
-    emailAndPassword: { 
-      enabled: true,
-    //   sendVerificationEmail: async ( { user, url, token }, request) => {
-    //   await sendEmail({
-    //     to: user.email,
-    //     subject: "Verify your email address",
-    //     text: `Click the link to verify your email: ${url}`,
-    //   });
-    // }, 
+  database: createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DATABASE_PASS,
+    database: process.env.DB_NAME,
+    port: 3306,
+  }),
+
+  user: {
+    deleteUser: {
+      enabled: true
+    }
+  },
+
+  emailAndPassword: {
+    enabled: true,
+    beforeDelete: async (user) => {
+      const userId = user.id;
+      const pool = auth.config.database;
+
+      // Drop user-specific chat instances table
+      const dropChatInstancesTableSQL = `DROP TABLE IF EXISTS \`${userId}_chat_instances\``;
+      await pool.query(dropChatInstancesTableSQL);
+      
+      const dropChatInstancesTableSQL1 = `DROP TABLE IF EXISTS \`${userId}_doc_chat_instances\``;
+      await pool.query(dropChatInstancesTableSQL1);
+                
     },
-    session: {
-    // default settings or your custom
-    expiresIn: 60 * 60 * 24 * 7,   // 7 days etc
+  },
+
+  session: {
+    expiresIn: 60 * 60 * 24 * 7,
     cookie: {
       name: 'auth_session',
       httpOnly: true,

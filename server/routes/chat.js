@@ -33,6 +33,7 @@ chatRouter.get('/api/chat/:slug',async (req,res)=>{
   }
 });
 
+
 //Getting chat index according to instance id
 chatRouter.get('/api/chat_index/:slug',async (req,res)=>{
   const { slug: instance_id } = req.params;
@@ -52,6 +53,7 @@ chatRouter.get('/api/chat_index/:slug',async (req,res)=>{
   }
 });
 
+
 //Getting all the instances
 chatRouter.get('/api/all_instance',async (req,res)=>{
   const userId = req.headers.userid;
@@ -66,6 +68,8 @@ chatRouter.get('/api/all_instance',async (req,res)=>{
   }
 });
 
+
+//For New Chat Table
 chatRouter.post('/api/newchat/:slug', async (req, res) => {
   const { slug: instance_id } = req.params;
   const {userId} = req.body;
@@ -84,6 +88,7 @@ chatRouter.post('/api/newchat/:slug', async (req, res) => {
   res.sendStatus(200);
 })
 
+
 //For New Instance
 chatRouter.post('/api/instance/:slug', async (req, res) => {
   const { slug: instance_id } = req.params;
@@ -99,7 +104,8 @@ chatRouter.post('/api/instance/:slug', async (req, res) => {
   res.sendStatus(200);
 })
 
-//
+
+//For Updating Topic Message
 chatRouter.post('/api/instance_topic/:slug', async (req, res) => {
   const { slug: chat_active_id } = req.params;
   const {topic, userId} = req.body;
@@ -114,6 +120,8 @@ chatRouter.post('/api/instance_topic/:slug', async (req, res) => {
   res.sendStatus(200);
 })
 
+
+//For Deleting Instance
 chatRouter.post('/api/instance_delete/:slug', async (req,res)=>{
   const { slug: instance_id } = req.params;
   const {userId} = req.body;
@@ -143,6 +151,7 @@ chatRouter.post('/api/instance_delete/:slug', async (req,res)=>{
 })
 
 
+//For Inserting Chat Message
 chatRouter.post('/api/go/:slug', async(req, res) => {
   const { slug: chat_active_id } = req.params;
   const {id,message,is_human} = req.body;
@@ -161,6 +170,8 @@ chatRouter.post('/api/go/:slug', async(req, res) => {
   res.sendStatus(200);
 });
 
+
+//For Inserting Chat Index
 chatRouter.post('/api/chat_index/:slug', async(req, res) => {
   const { slug: chat_active_id } = req.params;
   const {index, userMessageId, userId} = req.body;

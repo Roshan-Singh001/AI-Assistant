@@ -1,0 +1,3 @@
+Node.js is a Javascript runtime.
+It uses the V8 engine.
+Node.js is single-threaded but uses an event loop for concurrency.

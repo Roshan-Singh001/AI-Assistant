@@ -9,6 +9,7 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import editorRouter from './routes/editor.js';
 import chatRouter from './routes/chat.js';
+import docRouter from './routes/doc.js';
 const app = express();
 const port = 3000;
 
@@ -29,6 +30,7 @@ app.use(
 app.all("/api/auth/*", toNodeHandler(auth.handler));
 app.use('/code',editorRouter);
 app.use('/chat',chatRouter);
+app.use('/doc',docRouter);
 
 const databasePass = process.env.DATABASE_PASS;
 const db_host = process.env.DB_HOST;
@@ -58,9 +60,19 @@ app.post("/api/new_user", async(req,res)=>{
         const sql = `CREATE TABLE IF NOT EXISTS ${userId+'_chat_instances'}
                     (instance_id VARCHAR(255) PRIMARY KEY,
                     topic_message LONGTEXT NOT NULL,
-                    active BOOLEAN NOT NULL, 
+                    active BOOLEAN DEFAULT FALSE,
+                    pin BOOLEAN DEFAULT FALSE,
                     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`;
         await conn.query(sql);
+
+        const sql2 = `CREATE TABLE IF NOT EXISTS ${userId+'_doc_chat_instances'}
+                    (doc_instance_id VARCHAR(255) PRIMARY KEY,
+                    doc_topic_message LONGTEXT NOT NULL,
+                    doc_file_name VARCHAR(255) DEFAULT 'none',
+                    doc_type ENUM('pdf','docx','txt','ppt','none') DEFAULT 'none',
+                    doc_pin BOOLEAN DEFAULT FALSE,
+                    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`;
+        await conn.query(sql2);
         res.status(200).json({ message: "User table created successfully" });
 
     } catch (error) {

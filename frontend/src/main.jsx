@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+import { Children, StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ToastContainer } from 'react-toastify'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -7,10 +7,13 @@ import App from './App.jsx'
 
 import SimpleChat from './pages/SimpleChat.jsx';
 import CodeEdit from './pages/CodeEdit.jsx';
+import DocQuery from './pages/DocQuery.jsx';
+
 import Tools from './pages/Tools.jsx';
 import About from './pages/About.jsx';
 import Register from './pages/auth/Register.jsx';
 import Login from './pages/auth/Login.jsx';
+import PrivateRoute from './components/PrivateRoutes.jsx';
 import { ChatProvider } from './context/chatUnderstand.jsx';
 import { ChatIndexProvider } from './context/chatIndex.jsx';
 
@@ -23,31 +26,45 @@ const router = createBrowserRouter([
       </>
     ),
   },
+  
   {
-    path: "/tool/chat",
-    element: (
-      <>
-        <ChatProvider>
-          <ChatIndexProvider>
-            <SimpleChat />
-          </ChatIndexProvider>
-        </ChatProvider>
-      </>
-    ),
-  },
+    element: <PrivateRoute />,
+    children: [{
+      path: "/tool/chat",
+      element: (
+        <>
+          <ChatProvider>
+            <ChatIndexProvider>
+              <SimpleChat />
+            </ChatIndexProvider>
+          </ChatProvider>
+        </>
+      ),
+  }]},
   {
-    path: "/tool/code",
-    element: (
-      <>
-        <CodeEdit />
-      </>
-    ),
-  },
+    element: <PrivateRoute />,
+    children: [{
+      path: "/tool/code",
+      element: (
+        <>
+          <CodeEdit />
+        </>
+      ),
+  }]},
+  
   {
     path: "/tools",
     element: (
       <>
         <Tools />
+      </>
+    ),
+  },
+  {
+    path: "/tool/doc",
+    element: (
+      <>
+        <DocQuery />
       </>
     ),
   },

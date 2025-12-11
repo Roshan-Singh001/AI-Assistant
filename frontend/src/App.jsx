@@ -1,5 +1,6 @@
 import axios from "axios";
 import Aurora from './components/Aurora';
+import TextType from './components/TextType'
 
 import "regenerator-runtime/runtime";
 import { useNavigate } from "react-router-dom";
@@ -54,6 +55,13 @@ function App() {
       gradient: "from-purple-500 to-pink-500",
       action: 'code',
     },
+    {
+      name: "Doc Query",
+      description: "Ask questions from your documents",
+      icon: FileText,
+      gradient: "from-purple-500 to-cyan-500",
+      action: 'doc',
+    },
   ];
 
   return (
@@ -72,7 +80,7 @@ function App() {
         <div className="">
           <Navbar />
           {/* Main content */}
-          <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-6 py-12">
+          <div className="relative z-[5] flex flex-col items-center justify-center min-h-screen px-6 py-12">
             {/* Header with logo */}
             <div className="text-center mb-12">
               <div className="flex items-center justify-center mb-4">
@@ -91,10 +99,14 @@ function App() {
                 />
                 <div className="h-px bg-gradient-to-r from-transparent via-purple-400 to-transparent w-32"></div>
               </div>
-
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 max-w-4xl">
-                WHAT CAN I HELP WITH?
-              </h2>
+              <TextType
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 max-w-4xl"
+                text={["WHAT CAN I HELP WITH?", "GENERAL CHATS", "CODE EDITING", "DOCUMENT QUERIES"]}
+                typingSpeed={75}
+                pauseDuration={1500}
+                showCursor={true}
+                cursorCharacter="|"
+              />
 
               {/* <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
                 Choose from our AI-powered writing tools to create
@@ -152,7 +164,7 @@ function App() {
               <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
                 <div>
                   <a href="https://github.com/Roshan-Singh001/AI-Assistant" className="hover:scale-105 transition-transform duration-300 ">
-                    <FaGithub className="text-white size-7"/>
+                    <FaGithub className="text-white size-7" />
                   </a>
                 </div>
 
