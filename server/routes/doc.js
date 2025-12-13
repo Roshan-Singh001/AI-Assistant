@@ -70,7 +70,7 @@ docRouter.post('/api/upload_doc/:slug', upload.single('file'), async (req, res) 
     return res.json({ success: true, fileId });
   } catch (error) {
     console.error(error);
-    res.json({ success: false, msg: "Error processing file" });
+    res.status(500).json({ success: false, msg: "Error processing file" });
   }
 })
 
@@ -107,7 +107,7 @@ docRouter.post('/api/ask/:slug', async (req, res) => {
     }
     console.log("Received question:", question);
 
-    console.log(`doc_${instance_id}`);
+    console.log(`${instance_id}`);
 
     const collection = await get_Collection(`doc_${instance_id}`);
     console.log("Collection: ", collection)
@@ -146,12 +146,13 @@ docRouter.post('/api/ask/:slug', async (req, res) => {
     const insertSql = `INSERT INTO ${tableName} 
     (doc_chat_id, doc_chat_message, is_human) VALUES (?,?,?);`;
     await db.query(insertSql, [userMessageId, question, true]);
+    await new Promise(resolve => setTimeout(resolve, 1000));
     await db.query(insertSql, [aiMessageId, llmRes.response, false]);
 
     return res.json({ success: true, answer: llmRes.response });
   } catch (error) {
     console.error(error);
-    return res.json({ success: false, msg: "Error processing question" });
+    res.status(500).json({ success: false, msg: "Error processing question" });
 
   }
 });

@@ -1,12 +1,16 @@
 import * as pdfParse from "pdf-parse"
 import mammoth from "mammoth";
-import pptx2json from "pptx2json";
+import officeparser from "officeparser"
+
 
 export async function extractText(file) {
   const { mimetype, buffer } = file;
 
   if (mimetype === "application/pdf") {
-    return (await pdfParse(buffer)).text;
+    const uint8Array = new Uint8Array(buffer);
+    const parse = new pdfParse.PDFParse(uint8Array);
+    const result = await parse.getText();
+    return result.text;
   }
 
   if (mimetype.includes("word")) {
@@ -15,8 +19,13 @@ export async function extractText(file) {
   }
 
   if (mimetype.includes("presentation")) {
-    const data = await pptx2json.parse(buffer);
-    return data.slides.map(slide => slide.text).join("\n");
+    try {
+      const text = await officeparser.parseOfficeAsync(buffer);
+      return text || "";
+    } catch (err) {
+      console.error("PPTX parse error:", err);
+      throw new Error("Failed to parse PowerPoint file");
+    }
   }
 
   if (mimetype === "text/plain") {

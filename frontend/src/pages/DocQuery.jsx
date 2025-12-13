@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { authClient } from '../utils/auth_client';
 import { toast } from "react-toastify";
+import MainLogo from "../assets/images/MainLogo.png";
 import { Upload, Send, FileText, MessageSquare, Trash2, X, Menu, ChevronLeft } from 'lucide-react';
 import { BiSolidFileTxt } from "react-icons/bi";
 import { BsFileEarmarkPptFill } from "react-icons/bs";
@@ -12,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 const AxiosInstance = axios.create({
     baseURL: "http://localhost:3000/",
-    timeout: 100000,
+    timeout: 10000000,
     headers: { "X-Custom-Header": "foobar" },
 });
 
@@ -52,6 +53,7 @@ export default function DocQuery() {
             }
         }
         fetchChatHistory();
+        console.log("hello");
     }, [session]);
 
 
@@ -95,14 +97,36 @@ export default function DocQuery() {
             const data = res.data;
             setIsUploaded(true);
 
-
             if (data.success) {
                 setMessages([{
-                    type: 'system',
-                    content: `Document "${file.name}" uploaded and processed. You can now ask questions.`,
+                    is_human: 0,
+                    doc_chat_message: `Document "${file.name}" uploaded and processed. You can now ask questions.`,
                 }]);
 
-                setCurrentChatId(data.fileId);
+                setChatHistory((prev) =>
+                    prev.map((chat) => {
+                        if (chat.doc_instance_id === currentChatId) {
+
+                            let docType = "none";
+
+                            if (file?.type) {
+                                if (file.type.includes("pdf")) docType = "pdf";
+                                else if (file.type.includes("word")) docType = "docx";
+                                else if (file.type.includes("presentation")) docType = "ppt";
+                                else if (file.type === "text/plain") docType = "txt";
+                            }
+
+                            return {
+                                ...chat,
+                                doc_type: docType,
+                                doc_topic_message: file?.name || chat.doc_topic_message,
+                            };
+                        }
+
+                        return chat; 
+                    })
+                );
+
             } else {
                 toast.error('Processing failed.');
             }
@@ -125,8 +149,8 @@ export default function DocQuery() {
             const aiMessageId = uuidv4();
             const userMessage = {
                 id: userMessageId,
-                isHuman: true,
-                content: inputMessage,
+                is_human: true,
+                doc_chat_message: inputMessage,
             };
 
             setMessages(prev => [...prev, userMessage]);
@@ -142,8 +166,8 @@ export default function DocQuery() {
 
             const aiMessage = {
                 id: aiMessageId,
-                isHuman: false,
-                content: res.data.answer,
+                is_human: false,
+                doc_chat_message: res?.data?.answer || "Technical error occured",
             };
             setMessages(prev => [...prev, aiMessage]);
             setIsProcessing(false);
@@ -184,7 +208,7 @@ export default function DocQuery() {
 
     };
 
-    const handleDeleteChat = async(chatId, e) => {
+    const handleDeleteChat = async (chatId, e) => {
         e.stopPropagation();
         try {
             await AxiosInstance.delete('/doc/api/delete_doc_chat', {
@@ -193,27 +217,28 @@ export default function DocQuery() {
                     instanceId: chatId,
                 }
             });
-            setChatHistory(prev => prev.filter(chat => chat.id !== chatId));
+            setChatHistory(prev => prev.filter(chat => chat.doc_instance_id !== chatId));
+
             setChatInitial(false);
             setMessages([]);
             setUploadedFile(null);
             setCurrentChatId(null);
             setIsUploaded(false);
             toast.success("Chat deleted successfully");
-            
+
         } catch (error) {
             console.log("Error deleting chat:", error);
             toast.error("Failed to delete chat");
-            
+
         }
     };
 
     const loadChat = async (chatId, chat) => {
         setCurrentChatId(chatId);
         setChat(chat);
-        
-        if(chatId===currentChatId)return;
-        if(chat.doc_type == 'none'){
+
+        if (chatId === currentChatId) return;
+        if (chat.doc_type == 'none') {
             setMessages([]);
             setIsUploaded(false);
             return;
@@ -252,7 +277,7 @@ export default function DocQuery() {
                         </button>
                     </div>
                     <button
-                        onClick={handleNewChat}
+                        onClick={() => { setChatInitial(true); handleNewChat(); }}
                         className="w-full py-3 px-4 bg-[#282828] hover:bg-cyan-600 rounded-xl font-medium   transition-all transform hover:scale-105 shadow-lg"
                     >
                         + New Chat
@@ -310,11 +335,14 @@ export default function DocQuery() {
                                     <Menu className="w-6 h-6" />
                                 </button>
                             )}
-                            <div>
-                                <h1 className="text-2xl lg:text-3xl font-bold text-cyan-400">
-                                    DocQuery
-                                </h1>
-                                <p className="text-sm text-gray-400 mt-1">Ask anything about your documents</p>
+                            <div className='flex justify-center items-center gap-4'>
+                                <img className="w-8 h-8 sm:w-[3rem] sm:h-[3rem]" src={MainLogo} alt="Simpl AI Logo" />
+                                <div>
+                                    <h1 className="text-2xl lg:text-3xl font-bold text-cyan-400">
+                                        DocQuery
+                                    </h1>
+                                    <p className="text-sm text-gray-400 mt-1">Ask anything about your documents</p>
+                                </div>
                             </div>
                         </div>
 
@@ -322,15 +350,8 @@ export default function DocQuery() {
                             <div className="hidden md:flex items-center space-x-3 bg-white/5 px-4 py-2 rounded-xl border border-white/10">
                                 <FileText className="w-5 h-5 text-cyan-400" />
                                 <div className="max-w-xs">
-                                    <p className="text-sm font-medium truncate">{Chat?.doc_file_name}</p>
-                                    {/* <p className="text-xs text-gray-400">{(uploadedFile.size / 1024).toFixed(2)} KB</p> */}
+                                    <p className="text-sm font-medium truncate">{Chat?.doc_file_name || uploadedFile?.name}</p>
                                 </div>
-                                {/* <button
-                                    onClick={() => setUploadedFile(null)}
-                                    className={`${messages.length > 1 && 'hidden'} p-1 hover:bg-red-500/20 rounded transition-colors`}
-                                >
-                                    <X className="w-4 h-4 text-red-400" />
-                                </button> */}
                             </div>
                         )}
                     </div>
@@ -339,13 +360,15 @@ export default function DocQuery() {
                 {chatInitial === false && (
                     <div className="flex-1 flex flex-col items-center justify-center p-6">
                         <div className="text-center max-w-2xl mx-auto">
-                            <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-cyan-400/20 to-purple-400/20 rounded-3xl flex items-center justify-center">
-                                <MessageSquare className="w-16 h-16 text-cyan-400" />
+                            <div className="flex items-center justify-center">
+                                <img className="w-[5rem] h-[5rem]" src={MainLogo} alt="Simpl AI Logo" />
                             </div>
-                            <h2 className="text-3xl font-bold mb-4">Welcome to DocQuery</h2>
-                            <p className="text-gray-400 mb-8">
-                                Upload your documents and start asking questions about their content.
-                            </p>
+                            <div>
+                                <h2 className="text-3xl font-bold mb-2 mt-4">Welcome to DocQuery</h2>
+                                <p className="text-gray-400 mb-8">
+                                    Upload your documents and start asking questions about their content.
+                                </p>
+                            </div>
                             <button
                                 onClick={() => { setChatInitial(true); handleNewChat(); }}
                                 className="py-3 px-6 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl font-medium hover:from-cyan-600 hover:to-blue-600 transition-all transform hover:scale-105 shadow-lg"
@@ -396,10 +419,10 @@ export default function DocQuery() {
                             {isProcessing && (
                                 <div className="flex justify-start">
                                     <div className="bg-white/10 backdrop-blur-sm border border-white/10 rounded-2xl p-4">
-                                        <div className="flex space-x-2">
+                                        <div className="flex gap-1">
                                             <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"></div>
-                                            <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                            <div className="w-2 h-2 bg-cyan-600 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                            <div className="w-2 h-2 bg-cyan-800 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                                         </div>
                                     </div>
                                 </div>
@@ -408,6 +431,7 @@ export default function DocQuery() {
                         </div>
                     )}
                 </div>)}
+
 
                 {/* Input Area */}
                 {chatInitial && (<div className="bg-black/30 backdrop-blur-sm border-t border-white/10 p-4 lg:p-6">
